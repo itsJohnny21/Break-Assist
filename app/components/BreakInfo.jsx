@@ -1,9 +1,21 @@
 import Image from "next/image"
 import Button from "./Button"
 import { useState } from "react"
+import { useAppContext } from "../context/Context"
+import { computeBreak } from "./Break"
 
-const BreakInfo = ({ className, breakk, ...props }) => {
+const BreakInfo = ({ className, ...props }) => {
   const [isOn, setIsOn] = useState(false)
+
+  const context = useAppContext()
+  const caseCount = context.caseCount
+  const palletDimensions = {
+    length: context.palletLength,
+    height: context.palletHeight,
+    width: context.palletWidth,
+  }
+  const breakk = computeBreak(palletDimensions, caseCount)
+  console.log(breakk)
 
   return (
     <div className={`flex-col text-center ${className}`} {...props}>

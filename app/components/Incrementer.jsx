@@ -1,7 +1,10 @@
+import { useAppContext } from "../context/Context"
 import Button from "./Button"
 
-const Incrementer = ({ caseCountState, maxCaseCount }) => {
-  const [caseCount, setCaseCount] = caseCountState
+const Incrementer = ({ ...props }) => {
+  const context = useAppContext()
+  const maxCaseCount = context.maxCaseCount
+  const [caseCount, setCaseCount] = [context.caseCount, context.setCaseCount]
 
   const handleIncrement = () => {
     setCaseCount((prevCount) => Math.min(prevCount + 1, maxCaseCount))

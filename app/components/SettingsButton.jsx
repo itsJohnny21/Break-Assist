@@ -2,38 +2,19 @@ import React, { useRef, useEffect, useState } from "react"
 import Button from "./Button"
 import DimensionsMenu from "./DimensionsMenu"
 import AppearanceMenu from "./DimensionsMenu"
+import { useAppContext } from "../context/Context"
 
-const SettingsButton = ({
-  className,
-  innerRef,
-  width,
-  height,
-  palletDimensions,
-  settingsState,
-  settingsValidators,
-  ...props
-}) => {
+const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
+  const context = useAppContext()
   const settingsRef = useRef(null)
   const dialogRef = useRef(null)
   const [showModal, setShowModal] = useState(false)
-  const [settings, setSettings] = settingsState
+  const [settings, setSettings] = [context.settings, context.setSettings]
   const [tmpSettings, setTmpSettings] = useState(settings)
 
   const menus = {
-    dimensions: (
-      <DimensionsMenu
-        settingsState={[settings, settingsState]}
-        tmpSettingsState={[tmpSettings, setTmpSettings]}
-        settingsValidators={settingsValidators}
-      />
-    ),
-    appearance: (
-      <AppearanceMenu
-        settingsState={[settings, settingsState]}
-        tmpSettingsState={[tmpSettings, setTmpSettings]}
-        settingsValidators={settingsValidators}
-      />
-    ),
+    dimensions: <DimensionsMenu />,
+    appearance: <AppearanceMenu />,
   }
   const [selectedMenu, setSelectedMenu] = useState(menus.dimensions)
 

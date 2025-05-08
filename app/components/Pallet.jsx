@@ -1,44 +1,6 @@
 import React from "react"
-import { dimensions as cubeDimensions } from "./Case"
 import Stack from "./Stack"
-
-const generateStackPositions = (
-  palletDimensions,
-  palletCenter,
-  spacing = 0
-) => {
-  const {
-    length: numCasesX,
-    height: numCasesY,
-    width: numCasesZ,
-  } = palletDimensions
-  const [centerX, centerY, centerZ] = palletCenter
-  const startX =
-    centerX - ((numCasesX - 1) * (cubeDimensions.length + spacing)) / 2
-
-  const startY = centerY - (numCasesY * cubeDimensions.height) / 2
-
-  const startZ =
-    centerZ - ((numCasesZ - 1) * (cubeDimensions.width + spacing)) / 2
-
-  const stackHeight = numCasesY
-
-  const positions = []
-
-  for (let i = 0; i < numCasesZ; i++) {
-    const row = []
-    for (let j = 0; j < numCasesX; j++) {
-      const xPos = startX + j * (cubeDimensions.length + spacing)
-      const zPos = startZ + i * (cubeDimensions.width + spacing)
-      const stackPosition = [xPos, startY, zPos]
-
-      row.push([xPos, startY, zPos])
-    }
-
-    positions.push(row)
-  }
-  return positions
-}
+import { useAppContext } from "../context/Context"
 
 const Pallet = ({
   dimensions,
@@ -47,7 +9,48 @@ const Pallet = ({
   lower,
   lowerQuantity,
   position,
+  ...props
 }) => {
+  const context = useAppContext()
+  const caseDimensions = context.caseDimensions
+  const generateStackPositions = (
+    palletDimensions,
+    palletCenter,
+    spacing = 0
+  ) => {
+    const {
+      length: numCasesX,
+      height: numCasesY,
+      width: numCasesZ,
+    } = palletDimensions
+
+    const [centerX, centerY, centerZ] = palletCenter
+    const startX =
+      centerX - ((numCasesX - 1) * (caseDimensions.length + spacing)) / 2
+
+    const startY = centerY - (numCasesY * caseDimensions.height) / 2
+
+    const startZ =
+      centerZ - ((numCasesZ - 1) * (caseDimensions.width + spacing)) / 2
+
+    const stackHeight = numCasesY
+
+    const positions = []
+
+    for (let i = 0; i < numCasesZ; i++) {
+      const row = []
+      for (let j = 0; j < numCasesX; j++) {
+        const xPos = startX + j * (caseDimensions.length + spacing)
+        const zPos = startZ + i * (caseDimensions.width + spacing)
+        const stackPosition = [xPos, startY, zPos]
+
+        row.push([xPos, startY, zPos])
+      }
+
+      positions.push(row)
+    }
+    return positions
+  }
   const stackPositions = generateStackPositions(dimensions, position)
 
   const isDonut =

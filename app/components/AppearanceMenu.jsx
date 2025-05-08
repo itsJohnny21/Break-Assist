@@ -4,6 +4,7 @@ const AppearanceMenu = ({
   settingsState,
   tmpSettingsState,
   settingsValidators,
+  ...props
 }) => {
   return <div>AppearanceMenu</div>
 }

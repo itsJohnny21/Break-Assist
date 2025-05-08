@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from "react"
+import { useAppContext } from "../context/Context"
 
-const DimensionsMenu = ({
-  settingsState,
-  tmpSettingsState,
-  settingsValidators,
-}) => {
-  const [settings, setSettings] = settingsState
-  const [tmpSettings, setTmpSettings] = tmpSettingsState
-  const [tmp, setTmp] = useState(0)
+const DimensionsMenu = ({ ...props }) => {
+  const context = useAppContext()
+  const [settings, setSettings] = [context.settings, context.setSettings]
+  const [tmpSettings, setTmpSettings] = [
+    context.tmpSettings,
+    context.setTmpSettings,
+  ]
+  const settingsValidators = context.settingsValidators
 
-  console.log("tmpSettings updated:", tmpSettings)
-
-  useEffect(() => {
-    console.log(settings)
-  }, [settings])
+  useEffect(() => {}, [settings])
 
   const handleInputChange = (setting, value) => {
     if (settingsValidators[setting](value)) {
@@ -35,7 +32,7 @@ const DimensionsMenu = ({
           </label>
           <input
             id="palletLength"
-            value={tmp}
+            value={tmpSettings.palletLength}
             onChange={(e) => handleInputChange("palletLength", e.target.value)}
             className="text-center border-2 rounded"
             type="number"

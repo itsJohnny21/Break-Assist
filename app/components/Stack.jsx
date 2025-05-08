@@ -1,14 +1,17 @@
 import React from "react"
-import { dimensions as cubeDimensions } from "./Case"
 import Case from "./Case"
+import { useAppContext } from "../context/Context"
 
-const Stack = ({ maxHeight, height, position, color = "blue" }) => {
+const Stack = ({ maxHeight, height, position, color = "blue", ...props }) => {
+  const context = useAppContext()
+  const caseDimensions = context.caseDimensions
+
   const generateCasePositions = (height, center) => {
     const [centerX, centerY, centerZ] = center
     const positions = []
 
     for (let i = 0; i < height; i++) {
-      const cubeY = centerY + i * cubeDimensions.height
+      const cubeY = centerY + i * caseDimensions.height
       const position = [centerX, cubeY, centerZ]
       positions.push(position)
     }

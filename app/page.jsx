@@ -11,36 +11,24 @@ import Stack from "./components/Stack"
 import Pallet from "./components/Pallet"
 import SettingsButton from "./components/SettingsButton"
 import { dimensions } from "./components/Case"
-import { ContextProvider } from "/context/Context"
+import { ContextProvider } from "./context/Context"
+import { computeBreak } from "./components/Break"
 
 const Home = () => {
-  const [caseCount, setCaseCount] = useState(53)
-
   return (
     <ContextProvider>
       <div className="flex-col justify-center justify-items-center">
         <Header />
         <Scene
-          palletDimensions={palletDimensions}
-          caseCount={caseCount}
           style={{
             width: "70vw",
             height: "60vh",
             background: "#ffffff",
           }}
         />
-        <Incrementer
-          caseCountState={[caseCount, setCaseCount]}
-          maxCaseCount={maxCaseCount}
-        />
-        {/* <BreakInfo className="my-4" breakk={breakk} /> */}
-        <SettingsButton
-          palletDimensions={palletDimensions}
-          settingsState={[settings, setSettings]}
-          settingsValidators={settingsValidators}
-          width="40px"
-          height="40px"
-        />
+        <Incrementer />
+        <BreakInfo className="my-4" />
+        <SettingsButton width="40px" height="40px" />
         <Footer />
       </div>
     </ContextProvider>

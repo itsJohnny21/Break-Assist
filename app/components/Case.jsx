@@ -4,9 +4,7 @@ import { Mesh, MeshStandardMaterial } from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
 import { clone } from "three/examples/jsm/utils/SkeletonUtils"
 
-export const dimensions = { length: 2, height: 1.717, width: 2 }
-
-const Case = ({ position, color, opacity = 1 }) => {
+const Case = ({ position, color, opacity = 1, ...props }) => {
   const gltf = useLoader(GLTFLoader, "models/case.gltf")
   const modelRef = useRef()
   const instance = clone(gltf.scene)
