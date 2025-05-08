@@ -1,12 +1,17 @@
 import React, { useRef, useEffect, useState } from "react"
-import { usePalletDimensions } from "../context/PalletDimensionsContext"
 import Button from "./Button"
 
-const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
+const SettingsButton = ({
+  className,
+  innerRef,
+  width,
+  height,
+  palletDimensions,
+  ...props
+}) => {
   const settingsRef = useRef(null)
   const dialogRef = useRef(null)
   const [showModal, setShowModal] = useState(false)
-  const palletDimensions = usePalletDimensions()
 
   const handleSave = () => {}
 

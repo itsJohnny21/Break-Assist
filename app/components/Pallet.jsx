@@ -3,7 +3,11 @@ import { dimensions as cubeDimensions } from "./Case"
 import Stack from "./Stack"
 
 const generateStacks = (palletDimensions, palletCenter, spacing = 0) => {
-  const [numCasesX, numCasesY, numCasesZ] = palletDimensions
+  const {
+    length: numCasesX,
+    height: numCasesY,
+    width: numCasesZ,
+  } = palletDimensions
   const [centerX, centerY, centerZ] = palletCenter
   const colors = [
     "red",
@@ -37,7 +41,6 @@ const generateStacks = (palletDimensions, palletCenter, spacing = 0) => {
       const stackPosition = [stackXPos, startY, stackZPos]
 
       const color = colors[counter % colors.length]
-      console.log(color)
       counter += 1
 
       stacks.push(

@@ -6,22 +6,22 @@ const Stack = ({ height, position, color }) => {
   const generateCubePositions = (height, center) => {
     const [centerX, centerY, centerZ] = center
     const cubePositions = []
-    const cubes = []
+    const cases = []
 
     for (let i = 0; i < height; i++) {
       const cubeY = centerY + i * cubeDimensions.height
       cubePositions.push([centerX, cubeY, centerZ])
       const cubePosition = [centerX, cubeY, centerZ]
 
-      cubes.push(<Case key={i} position={cubePosition} color={color} />)
+      cases.push(<Case key={i} position={cubePosition} color={color} />)
     }
 
-    return cubes
+    return cases
   }
 
-  const cubes = generateCubePositions(height, position)
+  const cases = generateCubePositions(height, position)
 
-  return <group>{cubes}</group>
+  return <group>{cases}</group>
 }
 
 export default Stack

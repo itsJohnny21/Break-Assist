@@ -4,7 +4,7 @@ import Pallet from "./Pallet"
 import React from "react"
 import { dimensions as cubeDimensions } from "./Case"
 
-const Scene = ({ breakk, className, ...props }) => {
+const Scene = ({ breakk, className, palletDimensions, ...props }) => {
   return (
     <Canvas camera={{ fov: 30, position: [0, 0, 30] }} {...props}>
       <ambientLight intensity={0.5} />
@@ -23,11 +23,7 @@ const Scene = ({ breakk, className, ...props }) => {
 
           return (
             <Pallet
-              dimensions={[
-                breakk.dimensions.length,
-                breakk.dimensions.height,
-                breakk.dimensions.width,
-              ]}
+              dimensions={palletDimensions}
               key={i}
               position={[xPos, 0, 0]}
             />
