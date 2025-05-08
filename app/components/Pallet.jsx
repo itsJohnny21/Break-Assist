@@ -2,26 +2,17 @@ import React from "react"
 import { dimensions as cubeDimensions } from "./Case"
 import Stack from "./Stack"
 
-const generateStacks = (palletDimensions, palletCenter, spacing = 0) => {
+const generateStackPositions = (
+  palletDimensions,
+  palletCenter,
+  spacing = 0
+) => {
   const {
     length: numCasesX,
     height: numCasesY,
     width: numCasesZ,
   } = palletDimensions
   const [centerX, centerY, centerZ] = palletCenter
-  const colors = [
-    "red",
-    "green",
-    "blue",
-    "pink",
-    "yellow",
-    "orange",
-    "purple",
-    "black",
-    "cyan",
-  ]
-  const stacks = []
-
   const startX =
     centerX - ((numCasesX - 1) * (cubeDimensions.length + spacing)) / 2
 
@@ -32,34 +23,68 @@ const generateStacks = (palletDimensions, palletCenter, spacing = 0) => {
 
   const stackHeight = numCasesY
 
-  let counter = 0
+  const positions = []
 
-  for (let row = 0; row < numCasesZ; row++) {
-    for (let col = 0; col < numCasesX; col++) {
-      const stackXPos = startX + col * (cubeDimensions.length + spacing)
-      const stackZPos = startZ + row * (cubeDimensions.width + spacing)
-      const stackPosition = [stackXPos, startY, stackZPos]
+  for (let i = 0; i < numCasesZ; i++) {
+    const row = []
+    for (let j = 0; j < numCasesX; j++) {
+      const xPos = startX + j * (cubeDimensions.length + spacing)
+      const zPos = startZ + i * (cubeDimensions.width + spacing)
+      const stackPosition = [xPos, startY, zPos]
 
-      const color = colors[counter % colors.length]
-      counter += 1
-
-      stacks.push(
-        <Stack
-          key={`stack-${row}-${col}`}
-          position={stackPosition}
-          height={stackHeight}
-          cubeDimensions={cubeDimensions}
-          color={color}
-        />
-      )
+      row.push([xPos, startY, zPos])
     }
+
+    positions.push(row)
   }
-  return stacks
+  return positions
 }
 
-const Pallet = ({ dimensions, position }) => {
-  const stacks = generateStacks(dimensions, position)
-  return <group>{stacks}</group>
+const Pallet = ({
+  dimensions,
+  upper,
+  upperQuantity,
+  lower,
+  lowerQuantity,
+  position,
+}) => {
+  const stackPositions = generateStackPositions(dimensions, position)
+
+  const isDonut =
+    dimensions.length === dimensions.width &&
+    dimensions.length % 2 === 1 &&
+    upperQuantity / (dimensions.length * dimensions.width - 1) === lowerQuantity
+
+  const center = Math.floor(dimensions.length / 2)
+  let index = 0
+
+  const stacks = stackPositions.map((row, i) =>
+    row.map((stackPosition, j) => {
+      if (i === center && j === center && isDonut) {
+        return (
+          <Stack
+            key={`${i}-${j}`}
+            maxHeight={dimensions.height}
+            height={lower}
+            position={stackPosition}
+          />
+        )
+      }
+
+      const height = index < upperQuantity ? upper : lower
+      index++
+      return (
+        <Stack
+          key={`${i}-${j}`}
+          maxHeight={dimensions.height}
+          height={height}
+          position={stackPosition}
+        />
+      )
+    })
+  )
+
+  return <group>{stacks.flat()}</group>
 }
 
 export default Pallet

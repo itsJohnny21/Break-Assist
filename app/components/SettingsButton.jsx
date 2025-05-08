@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from "react"
 import Button from "./Button"
+import DimensionsMenu from "./DimensionsMenu"
+import AppearanceMenu from "./DimensionsMenu"
 
 const SettingsButton = ({
   className,
@@ -7,15 +9,37 @@ const SettingsButton = ({
   width,
   height,
   palletDimensions,
+  settingsState,
+  settingsValidators,
   ...props
 }) => {
   const settingsRef = useRef(null)
   const dialogRef = useRef(null)
   const [showModal, setShowModal] = useState(false)
+  const [settings, setSettings] = settingsState
+  const [tmpSettings, setTmpSettings] = useState(settings)
+
+  const menus = {
+    dimensions: (
+      <DimensionsMenu
+        settingsState={[settings, settingsState]}
+        tmpSettingsState={[tmpSettings, setTmpSettings]}
+        settingsValidators={settingsValidators}
+      />
+    ),
+    appearance: (
+      <AppearanceMenu
+        settingsState={[settings, settingsState]}
+        tmpSettingsState={[tmpSettings, setTmpSettings]}
+        settingsValidators={settingsValidators}
+      />
+    ),
+  }
+  const [selectedMenu, setSelectedMenu] = useState(menus.dimensions)
 
   const handleSave = () => {}
 
-  const handleClick = () => {
+  const handleSettingsClick = () => {
     setShowModal(!showModal)
 
     if (dialogRef.current) {
@@ -44,6 +68,10 @@ const SettingsButton = ({
     }
   }
 
+  const handleMenuClick = (menuName) => {
+    setSelectedMenu(menu[menuName])
+  }
+
   useEffect(() => {
     return () => {
       if (settingsRef.current) {
@@ -61,56 +89,31 @@ const SettingsButton = ({
       {showModal && (
         <div
           ref={dialogRef}
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex items-center justify-center"
         >
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-2">
-              Edit Pallet Dimensions
-            </h2>
-            <p className="text-gray-500 text-sm mb-4">
-              Adjust the dimensions of the pallet.
-            </p>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="width" className="text-right">
-                  Width
-                </label>
-                <input
-                  id="width"
-                  value={palletDimensions.width}
-                  onChange={(e) => handleInputChange("width", e.target.value)}
-                  className="col-span-3"
-                  type="number"
-                />
+          <div className="rounded-lg shadow-lg flex flex-row">
+            <div className="flex flex-col px-3 bg-red-400">
+              <div className="flex flex-col gap-10 py-5 px-3 bg-amber-300">
+                <Button className="p-2">Exit</Button>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="length" className="text-right">
-                  Length
-                </label>
-                <input
-                  id="length"
-                  value={palletDimensions.length}
-                  onChange={(e) => handleInputChange("length", e.target.value)}
-                  className="col-span-3"
-                  type="number"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="height" className="text-right">
-                  Height
-                </label>
-                <input
-                  id="height"
-                  value={palletDimensions.height}
-                  onChange={(e) => handleInputChange("height", e.target.value)}
-                  className="col-span-3"
-                  type="number"
-                />
+              <div className="flex flex-col justify-center gap-10 px-3">
+                <Button
+                  onClick={(e) => {
+                    handleMenuClick("dimensions")
+                  }}
+                >
+                  Dimensions
+                </Button>
+                <Button
+                  onClick={(e) => {
+                    handleMenuClick("appearance")
+                  }}
+                >
+                  Appearance
+                </Button>
               </div>
             </div>
-            <div className="flex justify-end">
-              <Button onClick={handleSave}>Save changes</Button>
-            </div>
+            {selectedMenu}
           </div>
         </div>
       )}
@@ -124,7 +127,7 @@ const SettingsButton = ({
           height: height || "48px",
         }}
         {...props}
-        onClick={handleClick}
+        onClick={handleSettingsClick}
       >
         <img
           style={{
@@ -155,3 +158,4 @@ const styles = () => {
 }
 
 export default SettingsButton
+;("Dimensions -> Pallet Dimensions, Donut Hole Dimensions, Enable Donut, Plus -> Max, Enable, Appearance -> Pallet Color, Theme")

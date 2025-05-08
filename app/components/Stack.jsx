@@ -2,24 +2,27 @@ import React from "react"
 import { dimensions as cubeDimensions } from "./Case"
 import Case from "./Case"
 
-const Stack = ({ height, position, color }) => {
-  const generateCubePositions = (height, center) => {
+const Stack = ({ maxHeight, height, position, color = "blue" }) => {
+  const generateCasePositions = (height, center) => {
     const [centerX, centerY, centerZ] = center
-    const cubePositions = []
-    const cases = []
+    const positions = []
 
     for (let i = 0; i < height; i++) {
       const cubeY = centerY + i * cubeDimensions.height
-      cubePositions.push([centerX, cubeY, centerZ])
-      const cubePosition = [centerX, cubeY, centerZ]
-
-      cases.push(<Case key={i} position={cubePosition} color={color} />)
+      const position = [centerX, cubeY, centerZ]
+      positions.push(position)
     }
 
-    return cases
+    return positions
   }
 
-  const cases = generateCubePositions(height, position)
+  const casePositions = generateCasePositions(height, position)
+
+  const cases = casePositions.map((pos, i) => {
+    return (
+      <Case key={i} position={pos} color={color} opacity={i < height ? 1 : 0} />
+    )
+  })
 
   return <group>{cases}</group>
 }
