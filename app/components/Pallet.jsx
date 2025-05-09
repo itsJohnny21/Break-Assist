@@ -1,18 +1,28 @@
 import React from "react"
 import Stack from "./Stack"
-import { useAppContext } from "../context/Context"
+import { useAppContext } from "../context/AppContext"
 
-const Pallet = ({
-  dimensions,
-  upper,
-  upperQuantity,
-  lower,
-  lowerQuantity,
-  position,
-  ...props
-}) => {
-  const context = useAppContext()
-  const caseDimensions = context.caseDimensions
+const Pallet = ({ position, ...props }) => {
+  const {
+    palletLength,
+    palletHeight,
+    palletWidth,
+    caseDimensions,
+    caseCount,
+    upper,
+    upperQuantity,
+    lower,
+    lowerQuantity,
+    plus,
+    palletCount,
+  } = useAppContext()
+
+  const palletDimensions = {
+    length: palletLength,
+    height: palletHeight,
+    width: palletWidth,
+  }
+
   const generateStackPositions = (
     palletDimensions,
     palletCenter,
@@ -51,14 +61,15 @@ const Pallet = ({
     }
     return positions
   }
-  const stackPositions = generateStackPositions(dimensions, position)
+  const stackPositions = generateStackPositions(palletDimensions, position)
 
   const isDonut =
-    dimensions.length === dimensions.width &&
-    dimensions.length % 2 === 1 &&
-    upperQuantity / (dimensions.length * dimensions.width - 1) === lowerQuantity
+    palletDimensions.length === palletDimensions.width &&
+    palletDimensions.length % 2 === 1 &&
+    upperQuantity / (palletDimensions.length * palletDimensions.width - 1) ===
+      lowerQuantity
 
-  const center = Math.floor(dimensions.length / 2)
+  const center = Math.floor(palletDimensions.length / 2)
   let index = 0
 
   const stacks = stackPositions.map((row, i) =>
@@ -67,7 +78,7 @@ const Pallet = ({
         return (
           <Stack
             key={`${i}-${j}`}
-            maxHeight={dimensions.height}
+            maxHeight={palletDimensions.height}
             height={lower}
             position={stackPosition}
           />
@@ -79,7 +90,7 @@ const Pallet = ({
       return (
         <Stack
           key={`${i}-${j}`}
-          maxHeight={dimensions.height}
+          maxHeight={palletDimensions.height}
           height={height}
           position={stackPosition}
         />

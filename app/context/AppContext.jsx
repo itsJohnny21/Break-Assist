@@ -6,8 +6,58 @@ export const AppProvider = ({ children }) => {
   const [palletLength, setPalletLength] = useState(3)
   const [palletHeight, setPalletHeight] = useState(6)
   const [palletWidth, setPalletWidth] = useState(3)
+  const [donutHoleWidth, setDonutHoleWidth] = useState(1)
+  const [donutEnable, setDonutEnable] = useState(true)
   const [caseCount, setCaseCount] = useState(54)
   const caseDimensions = { length: 2, height: 1.717, width: 2 }
+  const maxProducts = 34
+  const maxCaseCount = palletLength * palletHeight * palletWidth * 5
+
+  const validateBetweenRange = (oldValue, newValue, min, max) => {
+    const parsedValue = parseInt(newValue)
+
+    console.log(parsedValue)
+    if (!isNaN(parsedValue)) {
+      if (parsedValue < min) {
+        return min
+      } else if (parsedValue > max) {
+        return max
+      } else {
+        return parsedValue
+      }
+    } else if (newValue !== "") {
+      return oldValue
+    } else {
+      return ""
+    }
+  }
+
+  const settings = {
+    palletLength: {
+      state: [palletLength, setPalletLength],
+      validator: (newValue) =>
+        validateBetweenRange(palletLength, newValue, 2, 11),
+    },
+    palletHeight: {
+      state: [palletHeight, setPalletHeight],
+      validator: (newValue) =>
+        validateBetweenRange(palletHeight, newValue, 2, 11),
+    },
+    palletWidth: {
+      state: [palletWidth, setPalletWidth],
+      validator: (newValue) =>
+        validateBetweenRange(palletWidth, newValue, 2, 11),
+    },
+    donutHoleWidth: {
+      state: [donutHoleWidth, setDonutHoleWidth],
+      validator: (newValue) =>
+        validateBetweenRange(donutHoleWidth, newValue, 2, 11),
+    },
+    donutEnable: {
+      state: [donutEnable, setDonutEnable],
+      validator: () => true,
+    },
+  }
 
   const palletDimensions = useMemo(
     () => ({
@@ -98,7 +148,8 @@ export const AppProvider = ({ children }) => {
         caseCount,
         setCaseCount,
         caseDimensions,
-        setCaseDimensions,
+        maxProducts,
+        maxCaseCount,
         palletDimensions,
         upper,
         upperQuantity,
@@ -106,6 +157,9 @@ export const AppProvider = ({ children }) => {
         lowerQuantity,
         plus,
         palletCount,
+        donutHoleWidth,
+        donutEnable,
+        settings,
       }}
     >
       {children}

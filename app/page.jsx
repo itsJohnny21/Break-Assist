@@ -11,12 +11,12 @@ import Stack from "./components/Stack"
 import Pallet from "./components/Pallet"
 import SettingsButton from "./components/SettingsButton"
 import { dimensions } from "./components/Case"
-import { ContextProvider } from "./context/Context"
+import { AppProvider } from "./context/AppContext"
 import { computeBreak } from "./components/Break"
 
 const Home = () => {
   return (
-    <ContextProvider>
+    <AppProvider>
       <div className="flex-col justify-center justify-items-center">
         <Header />
         <Scene
@@ -31,7 +31,7 @@ const Home = () => {
         <SettingsButton width="40px" height="40px" />
         <Footer />
       </div>
-    </ContextProvider>
+    </AppProvider>
   )
 }
 

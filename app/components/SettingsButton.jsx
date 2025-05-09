@@ -1,16 +1,14 @@
 import React, { useRef, useEffect, useState } from "react"
 import Button from "./Button"
 import DimensionsMenu from "./DimensionsMenu"
-import AppearanceMenu from "./DimensionsMenu"
-import { useAppContext } from "../context/Context"
+import AppearanceMenu from "./AppearanceMenu"
+import { useAppContext } from "../context/AppContext"
 
 const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
   const context = useAppContext()
   const settingsRef = useRef(null)
-  const dialogRef = useRef(null)
-  const [showModal, setShowModal] = useState(false)
-  const [settings, setSettings] = [context.settings, context.setSettings]
-  const [tmpSettings, setTmpSettings] = useState(settings)
+  const [showModal, setShowModal] = useState(null)
+  const [visible, setVisible] = useState(false)
 
   const menus = {
     dimensions: <DimensionsMenu />,
@@ -19,22 +17,29 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
   const [selectedMenu, setSelectedMenu] = useState(menus.dimensions)
 
   const handleSave = () => {}
+  const handleCancel = () => {
+    setShowModal(false)
+  }
 
   const handleSettingsClick = () => {
-    setShowModal(!showModal)
-
-    if (dialogRef.current) {
-      if (!showModal) {
-        dialogRef.current.show()
-      } else {
-        dialogRef.current.close()
-      }
+    if (showModal === null) {
+      setShowModal(true)
     }
 
-    if (settingsRef.current) {
+    if (!showModal) {
+      setShowModal(true)
+      setTimeout(() => setVisible(true), 10)
+    } else {
+      setVisible(false)
+      setTimeout(() => setShowModal(false), 200)
+    }
+  }
+
+  useEffect(() => {
+    if (settingsRef.current && showModal !== null) {
       settingsRef.current.style.animation = `${
-        showModal ? "rotate180ccw" : "rotate180cw"
-      } 1s ease-in-out`
+        showModal ? "rotate180cw" : "rotate180ccw"
+      } 400ms ease-in-out`
 
       settingsRef.current.addEventListener(
         "animationend",
@@ -47,10 +52,10 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
         { once: true }
       )
     }
-  }
+  }, [settingsRef, showModal])
 
   const handleMenuClick = (menuName) => {
-    setSelectedMenu(menu[menuName])
+    setSelectedMenu(menus[menuName])
   }
 
   useEffect(() => {
@@ -59,9 +64,6 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
         settingsRef.current.style.animation = ""
         settingsRef.current.style.transform = "rotate(0deg)"
       }
-      if (dialogRef.current) {
-        dialogRef.current.close()
-      }
     }
   }, [])
 
@@ -69,38 +71,64 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
     <>
       {showModal && (
         <div
-          ref={dialogRef}
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex items-center justify-center"
+          className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${
+            visible ? "opacity-100" : "opacity-0"
+          } bg-gray-600/50 backdrop-blur-sm`}
         >
-          <div className="rounded-lg shadow-lg flex flex-row">
-            <div className="flex flex-col px-3 bg-red-400">
-              <div className="flex flex-col gap-10 py-5 px-3 bg-amber-300">
-                <Button className="p-2">Exit</Button>
+          <div className="rounded-lg shadow-lg flex flex-col">
+            <div className="flex flex-row">
+              <div className="flex flex-col px-3 py-5 bg-red-400">
+                <div className="flex flex-col justify-center gap-10 px-3">
+                  <Button
+                    onClick={(e) => {
+                      handleMenuClick("dimensions")
+                    }}
+                  >
+                    Dimensions
+                  </Button>
+                  <Button
+                    onClick={(e) => {
+                      handleMenuClick("appearance")
+                    }}
+                  >
+                    Appearance
+                  </Button>
+                </div>
               </div>
-              <div className="flex flex-col justify-center gap-10 px-3">
-                <Button
-                  onClick={(e) => {
-                    handleMenuClick("dimensions")
-                  }}
-                >
-                  Dimensions
-                </Button>
-                <Button
-                  onClick={(e) => {
-                    handleMenuClick("appearance")
-                  }}
-                >
-                  Appearance
-                </Button>
-              </div>
+              {selectedMenu}
             </div>
-            {selectedMenu}
+            <div className="flex flex-row justify-between py-2 bg-amber-300">
+              <Button
+                onClick={(e) => {
+                  handleCancel()
+                }}
+                className="p-2"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={(e) => {
+                  handleReset()
+                }}
+                className="p-2"
+              >
+                Reset
+              </Button>
+              <Button
+                onClick={(e) => {
+                  handleSave()
+                }}
+                className="p-2"
+              >
+                Save
+              </Button>
+            </div>
           </div>
         </div>
       )}
       <button
         ref={settingsRef}
-        className={`rounded-full clickable fixed bottom-4 left-4 flex items-center justify-center ${
+        className={`rounded-full clickable fixed bottom-4 left-4 flex items-center justify-center z-50 ${
           className || ""
         }`}
         style={{

@@ -1,6 +1,6 @@
 import React from "react"
 import Case from "./Case"
-import { useAppContext } from "../context/Context"
+import { useAppContext } from "../context/AppContext"
 
 const Stack = ({ maxHeight, height, position, color = "blue", ...props }) => {
   const context = useAppContext()

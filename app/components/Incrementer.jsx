@@ -1,4 +1,4 @@
-import { useAppContext } from "../context/Context"
+import { useAppContext } from "../context/AppContext"
 import Button from "./Button"
 
 const Incrementer = ({ ...props }) => {

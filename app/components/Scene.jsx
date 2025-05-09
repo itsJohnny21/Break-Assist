@@ -7,7 +7,7 @@ import Break from "./Break"
 
 const Scene = ({ className, ...props }) => {
   return (
-    <Canvas camera={{ fov: 30, position: [0, 0, 30] }} {...props}>
+    <Canvas camera={{ fov: 30, position: [0, 0, 35] }} {...props}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[-2, 5, 2]} intensity={1} />
       <OrbitControls />
