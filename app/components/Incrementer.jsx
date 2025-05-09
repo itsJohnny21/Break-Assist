@@ -1,7 +1,7 @@
 import { useAppContext } from "../context/AppContext"
 import Button from "./Button"
 
-const Incrementer = ({ ...props }) => {
+const Incrementer = ({ className, ...props }) => {
   const context = useAppContext()
   const maxCaseCount = context.maxCaseCount
   const [caseCount, setCaseCount] = [context.caseCount, context.setCaseCount]
@@ -32,10 +32,13 @@ const Incrementer = ({ ...props }) => {
   }
 
   return (
-    <div className="flex-col justify-center text-center">
-      <span>{`case count`}</span>
+    <div className={`flex-col justify-center text-center ${className || ""}`}>
+      <span>case count</span>
       <div className="flex-row justify-center text-center">
-        <Button className="text-center" onClick={handleDecrement}>
+        <Button
+          className="text-center text-tertionary"
+          onClick={handleDecrement}
+        >
           -
         </Button>
         <input
@@ -44,7 +47,10 @@ const Incrementer = ({ ...props }) => {
           value={caseCount}
           onChange={(e) => handleValueChange(e)}
         ></input>
-        <Button className="text-center" onClick={handleIncrement}>
+        <Button
+          className="text-center text-tertionary"
+          onClick={handleIncrement}
+        >
           +
         </Button>
       </div>

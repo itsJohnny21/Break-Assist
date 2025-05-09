@@ -2,9 +2,8 @@ import React from "react"
 import Case from "./Case"
 import { useAppContext } from "../context/AppContext"
 
-const Stack = ({ maxHeight, height, position, color = "blue", ...props }) => {
-  const context = useAppContext()
-  const caseDimensions = context.caseDimensions
+const Stack = ({ maxHeight, height, position, color, ...props }) => {
+  const { caseDimensions, palletColor } = useAppContext()
 
   const generateCasePositions = (height, center) => {
     const [centerX, centerY, centerZ] = center
@@ -23,7 +22,12 @@ const Stack = ({ maxHeight, height, position, color = "blue", ...props }) => {
 
   const cases = casePositions.map((pos, i) => {
     return (
-      <Case key={i} position={pos} color={color} opacity={i < height ? 1 : 0} />
+      <Case
+        key={i}
+        position={pos}
+        color={palletColor || "blue"}
+        opacity={i < height ? 1 : 0}
+      />
     )
   })
 

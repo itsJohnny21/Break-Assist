@@ -1,22 +1,50 @@
-import React, { createContext, useContext, useMemo, useState } from "react"
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useEffect,
+} from "react"
 
 const AppContext = createContext()
 
 export const AppProvider = ({ children }) => {
+  useEffect(() => {
+    const rootElement = window.document.documentElement
+    const computedStyle = window.getComputedStyle(rootElement)
+    const primaryColor = computedStyle.getPropertyValue("--color-primary")
+    const secondaryColor = computedStyle.getPropertyValue("--color-secondary")
+    const tertionaryColor = computedStyle.getPropertyValue("--color-tertionary")
+
+    if (primaryColor) {
+      setPrimaryColor(primaryColor.trim())
+    }
+
+    if (secondaryColor) {
+      setSecondaryColor(secondaryColor.trim())
+    }
+
+    if (tertionaryColor) {
+      setTertionaryColor(tertionaryColor.trim())
+    }
+  }, [])
+
+  const [palletColor, setPalletColor] = useState("#3377ff")
   const [palletLength, setPalletLength] = useState(3)
   const [palletHeight, setPalletHeight] = useState(6)
   const [palletWidth, setPalletWidth] = useState(3)
-  const [donutHoleWidth, setDonutHoleWidth] = useState(1)
-  const [donutEnable, setDonutEnable] = useState(true)
-  const [caseCount, setCaseCount] = useState(54)
+  const [caseCount, setCaseCount] = useState(159)
   const caseDimensions = { length: 2, height: 1.717, width: 2 }
   const maxProducts = 34
   const maxCaseCount = palletLength * palletHeight * palletWidth * 5
 
+  const [primaryColor, setPrimaryColor] = useState(null)
+  const [secondaryColor, setSecondaryColor] = useState(null)
+  const [tertionaryColor, setTertionaryColor] = useState(null)
+
   const validateBetweenRange = (oldValue, newValue, min, max) => {
     const parsedValue = parseInt(newValue)
 
-    console.log(parsedValue)
     if (!isNaN(parsedValue)) {
       if (parsedValue < min) {
         return min
@@ -47,15 +75,6 @@ export const AppProvider = ({ children }) => {
       state: [palletWidth, setPalletWidth],
       validator: (newValue) =>
         validateBetweenRange(palletWidth, newValue, 2, 11),
-    },
-    donutHoleWidth: {
-      state: [donutHoleWidth, setDonutHoleWidth],
-      validator: (newValue) =>
-        validateBetweenRange(donutHoleWidth, newValue, 2, 11),
-    },
-    donutEnable: {
-      state: [donutEnable, setDonutEnable],
-      validator: () => true,
     },
   }
 
@@ -157,9 +176,13 @@ export const AppProvider = ({ children }) => {
         lowerQuantity,
         plus,
         palletCount,
-        donutHoleWidth,
-        donutEnable,
         settings,
+        palletColor,
+        setPalletColor,
+        primaryColor,
+        setPrimaryColor,
+        tertionaryColor,
+        setTertionaryColor,
       }}
     >
       {children}

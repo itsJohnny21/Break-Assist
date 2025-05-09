@@ -1,22 +1,17 @@
 import React, { useRef, useEffect, useState } from "react"
 import Button from "./Button"
 import DimensionsMenu from "./DimensionsMenu"
-import AppearanceMenu from "./AppearanceMenu"
 import { useAppContext } from "../context/AppContext"
+import SettingsIcon from "../../public/assets/icons/SettingsIcon"
 
 const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
-  const context = useAppContext()
+  const { primaryColor, tertionaryColor } = useAppContext()
   const settingsRef = useRef(null)
   const [showModal, setShowModal] = useState(null)
   const [visible, setVisible] = useState(false)
 
-  const menus = {
-    dimensions: <DimensionsMenu />,
-    appearance: <AppearanceMenu />,
-  }
-  const [selectedMenu, setSelectedMenu] = useState(menus.dimensions)
-
   const handleSave = () => {}
+
   const handleCancel = () => {
     setShowModal(false)
   }
@@ -34,6 +29,21 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
       setTimeout(() => setShowModal(false), 200)
     }
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape" && showModal) {
+        console.log("heard you")
+        setShowModal(false)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [showModal])
 
   useEffect(() => {
     if (settingsRef.current && showModal !== null) {
@@ -73,54 +83,33 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
         <div
           className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${
             visible ? "opacity-100" : "opacity-0"
-          } bg-gray-600/50 backdrop-blur-sm`}
+          } bg-black/40 backdrop-blur-sm`}
         >
-          <div className="rounded-lg shadow-lg flex flex-col">
+          <div className="border-2 flex flex-col bg-secondary">
             <div className="flex flex-row">
-              <div className="flex flex-col px-3 py-5 bg-red-400">
-                <div className="flex flex-col justify-center gap-10 px-3">
-                  <Button
-                    onClick={(e) => {
-                      handleMenuClick("dimensions")
-                    }}
-                  >
-                    Dimensions
-                  </Button>
-                  <Button
-                    onClick={(e) => {
-                      handleMenuClick("appearance")
-                    }}
-                  >
-                    Appearance
-                  </Button>
-                </div>
-              </div>
-              {selectedMenu}
+              <DimensionsMenu className={"bg-secondary"} />
             </div>
-            <div className="flex flex-row justify-between py-2 bg-amber-300">
+            <div className="flex flex-row justify-between bg-tertionary py-2">
               <Button
                 onClick={(e) => {
                   handleCancel()
                 }}
-                className="p-2"
               >
-                Cancel
+                cancel
               </Button>
               <Button
                 onClick={(e) => {
                   handleReset()
                 }}
-                className="p-2"
               >
-                Reset
+                reset
               </Button>
               <Button
                 onClick={(e) => {
                   handleSave()
                 }}
-                className="p-2"
               >
-                Save
+                save
               </Button>
             </div>
           </div>
@@ -128,7 +117,7 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
       )}
       <button
         ref={settingsRef}
-        className={`rounded-full clickable fixed bottom-4 left-4 flex items-center justify-center z-50 ${
+        className={`clickable fixed bottom-3 left-3 m-10 flex items-center z-50 ${
           className || ""
         }`}
         style={{
@@ -138,14 +127,7 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
         {...props}
         onClick={handleSettingsClick}
       >
-        <img
-          style={{
-            width: width || "48px",
-            height: height || "48px",
-          }}
-          src="/assets/icons/settings.svg"
-          alt="Settings"
-        />
+        <SettingsIcon fill={tertionaryColor} />
       </button>
     </>
   )

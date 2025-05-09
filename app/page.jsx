@@ -26,9 +26,9 @@ const Home = () => {
             background: "#ffffff",
           }}
         />
-        <Incrementer />
+        <Incrementer className={"py-5"} />
         <BreakInfo className="my-4" />
-        <SettingsButton width="40px" height="40px" />
+        <SettingsButton className={} width="40px" height="40px" />
         <Footer />
       </div>
     </AppProvider>
