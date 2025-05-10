@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useState } from "react"
 import Stack from "./Stack"
 import { useAppContext } from "../context/AppContext"
+import AnimatedStack from "./AnimatedStack"
 
 const Pallet = ({
   palletDimensions,
@@ -13,6 +14,23 @@ const Pallet = ({
   ...props
 }) => {
   const { caseDimensions } = useAppContext()
+
+  const generateTargetPositions = (palletDimensions, caseDimensions) => {
+    const A = palletDimensions.length * palletDimensions.width
+    const startX = -caseDimensions.length * (A - 1)
+    const startY = 0
+    const startZ = caseDimensions.width * 5
+    const delta = caseDimensions.length * 2
+
+    const positions = []
+
+    for (let i = 0; i < palletDimensions.length * palletDimensions.width; i++) {
+      const xPos = startX + delta * i
+      positions.push([xPos, startY, startZ])
+    }
+
+    return positions
+  }
 
   const generateStackPositions = (
     palletDimensions,
@@ -53,7 +71,18 @@ const Pallet = ({
     return positions
   }
 
+  const [animate, setAnimate] = useState(false)
+
+  const handleClick = () => {
+    setAnimate(true)
+  }
+
   const stackPositions = generateStackPositions(palletDimensions, position)
+
+  const targetPositions = generateTargetPositions(
+    palletDimensions,
+    caseDimensions
+  )
 
   const isDonut =
     palletDimensions.length === palletDimensions.width &&
@@ -64,35 +93,44 @@ const Pallet = ({
   const center = Math.floor(palletDimensions.length / 2)
   let index = 0
 
-  const stacks = stackPositions.map((row, i) =>
-    row.map((stackPosition, j) => {
+  const stacks = []
+
+  for (let i = 0; i < stackPositions.length; i++) {
+    const row = stackPositions[i]
+    for (let j = 0; j < row.length; j++) {
+      const stackPosition = row[j]
+      const targetPosition = targetPositions[i * stackPositions.length + j]
+
       if (i === center && j === center && isDonut) {
-        return (
-          <Stack
+        stacks.push(
+          <AnimatedStack
             key={`${i}-${j}`}
             maxHeight={palletDimensions.height}
             height={lower}
             position={stackPosition}
-            opacity={opacity}
+            targetPosition={targetPosition}
+            animate={animate}
+          />
+        )
+      } else {
+        const height = index < upperQuantity ? upper : lower
+        index++
+
+        stacks.push(
+          <AnimatedStack
+            key={`${i}-${j}`}
+            maxHeight={palletDimensions.height}
+            height={height}
+            position={stackPosition}
+            targetPosition={targetPosition}
+            animate={animate}
           />
         )
       }
+    }
+  }
 
-      const height = index < upperQuantity ? upper : lower
-      index++
-      return (
-        <Stack
-          key={`${i}-${j}`}
-          maxHeight={palletDimensions.height}
-          height={height}
-          position={stackPosition}
-          opacity={opacity}
-        />
-      )
-    })
-  )
-
-  return <group>{stacks.flat()}</group>
+  return <group onClick={handleClick}>{stacks}</group>
 }
 
 export default Pallet

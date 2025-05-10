@@ -142,9 +142,6 @@ const Break = ({ ...props }) => {
     const numTallStacks = plus % numStacks
     const numShortStacks = numStacks - numTallStacks
 
-    console.log(`lower: ${lower}`)
-    console.log(`upper: ${upper}`)
-
     const stacks = []
     let index = 0
 
@@ -178,8 +175,6 @@ const Break = ({ ...props }) => {
       )
       index++
     }
-
-    console.log(stacks)
 
     return stacks
   }

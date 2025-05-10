@@ -15,7 +15,7 @@ const Scene = ({ className, ...props }) => {
       <OrbitControls />
       <Stars />
       <Break />
-      <DeconstructedPallet />
+      {/* <DeconstructedPallet /> */}
     </Canvas>
   )
 }
