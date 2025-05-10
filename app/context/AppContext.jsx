@@ -30,13 +30,19 @@ export const AppProvider = ({ children }) => {
   }, [])
 
   const [palletColor, setPalletColor] = useState("#3377ff")
+
   const [palletLength, setPalletLength] = useState(3)
   const [palletHeight, setPalletHeight] = useState(6)
   const [palletWidth, setPalletWidth] = useState(3)
-  const [caseCount, setCaseCount] = useState(159)
+
+  const [tmpPalletLength, setTmpPalletLength] = useState(palletLength)
+  const [tmpPalletWidth, setTmpPalletWidth] = useState(palletWidth)
+  const [tmpPalletHeight, setTmpPalletHeight] = useState(palletHeight)
+
+  const [caseCount, setCaseCount] = useState(54)
   const caseDimensions = { length: 2, height: 1.717, width: 2 }
   const maxProducts = 34
-  const maxCaseCount = palletLength * palletHeight * palletWidth * 5
+  const maxCaseCount = palletLength * palletHeight * palletWidth * 7
 
   const [primaryColor, setPrimaryColor] = useState(null)
   const [secondaryColor, setSecondaryColor] = useState(null)
@@ -62,17 +68,14 @@ export const AppProvider = ({ children }) => {
 
   const settings = {
     palletLength: {
-      state: [palletLength, setPalletLength],
       validator: (newValue) =>
         validateBetweenRange(palletLength, newValue, 2, 11),
     },
     palletHeight: {
-      state: [palletHeight, setPalletHeight],
       validator: (newValue) =>
         validateBetweenRange(palletHeight, newValue, 2, 11),
     },
     palletWidth: {
-      state: [palletWidth, setPalletWidth],
       validator: (newValue) =>
         validateBetweenRange(palletWidth, newValue, 2, 11),
     },
@@ -183,6 +186,12 @@ export const AppProvider = ({ children }) => {
         setPrimaryColor,
         tertionaryColor,
         setTertionaryColor,
+        tmpPalletLength,
+        setTmpPalletLength,
+        tmpPalletWidth,
+        setTmpPalletWidth,
+        tmpPalletHeight,
+        setTmpPalletHeight,
       }}
     >
       {children}

@@ -4,11 +4,14 @@ import Button from "./Button"
 
 const DimensionsMenu = ({ className, ...props }) => {
   const { palletLength, palletHeight, palletWidth, settings } = useAppContext()
-  const { tmpPalletLength, tmpPalletHeight, tmpPalletWidth } = useAppContext()
-
-  const [localPalletLength, setLocalPalletLength] = useState(palletLength)
-  const [localPalletHeight, setLocalPalletHeight] = useState(palletHeight)
-  const [localPalletWidth, setLocalPalletWidth] = useState(palletWidth)
+  const {
+    tmpPalletLength,
+    setTmpPalletLength,
+    tmpPalletHeight,
+    setTmpPalletHeight,
+    tmpPalletWidth,
+    setTmpPalletWidth,
+  } = useAppContext()
 
   const handleIncrement = (setting, localValue, setLocalValue) => {
     const newValue = localValue + 1
@@ -29,9 +32,9 @@ const DimensionsMenu = ({ className, ...props }) => {
   }
 
   useEffect(() => {
-    setLocalPalletLength(palletLength)
-    setLocalPalletHeight(palletHeight)
-    setLocalPalletWidth(palletWidth)
+    setTmpPalletLength(palletLength)
+    setTmpPalletHeight(palletHeight)
+    setTmpPalletWidth(palletWidth)
   }, [palletLength, palletHeight, palletWidth])
 
   const handleBlur = (setting, localValue, setLocalValue) => {
@@ -43,9 +46,9 @@ const DimensionsMenu = ({ className, ...props }) => {
   }
 
   const disableDonut =
-    localPalletLength !== localPalletWidth ||
-    localPalletLength % 2 === 0 ||
-    localPalletWidth % 2 === 0
+    tmpPalletLength !== tmpPalletWidth ||
+    tmpPalletLength % 2 === 0 ||
+    tmpPalletWidth % 2 === 0
 
   const handleInputChange = (setting, localValue, setLocalValue) => {
     setLocalValue(localValue)
@@ -65,8 +68,8 @@ const DimensionsMenu = ({ className, ...props }) => {
               onClick={(e) =>
                 handleDecrement(
                   "palletLength",
-                  localPalletLength,
-                  setLocalPalletLength
+                  tmpPalletLength,
+                  setTmpPalletLength
                 )
               }
             >
@@ -74,20 +77,16 @@ const DimensionsMenu = ({ className, ...props }) => {
             </Button>
             <input
               id="palletLength"
-              value={localPalletLength}
+              value={tmpPalletLength}
               onChange={(e) =>
                 handleInputChange(
                   "palletLength",
                   e.target.value,
-                  setLocalPalletLength
+                  setTmpPalletLength
                 )
               }
               onBlur={(e) =>
-                handleBlur(
-                  "palletLength",
-                  localPalletLength,
-                  setLocalPalletLength
-                )
+                handleBlur("palletLength", tmpPalletLength, setTmpPalletLength)
               }
               className="text-center border-2 rounded"
               type="number"
@@ -97,8 +96,8 @@ const DimensionsMenu = ({ className, ...props }) => {
               onClick={(e) =>
                 handleIncrement(
                   "palletLength",
-                  localPalletLength,
-                  setLocalPalletLength
+                  tmpPalletLength,
+                  setTmpPalletLength
                 )
               }
             >
@@ -116,8 +115,8 @@ const DimensionsMenu = ({ className, ...props }) => {
               onClick={(e) =>
                 handleDecrement(
                   "palletWidth",
-                  localPalletWidth,
-                  setLocalPalletWidth
+                  tmpPalletWidth,
+                  setTmpPalletWidth
                 )
               }
             >
@@ -125,16 +124,16 @@ const DimensionsMenu = ({ className, ...props }) => {
             </Button>
             <input
               id="palletWidth"
-              value={localPalletWidth}
+              value={tmpPalletWidth}
               onChange={(e) =>
                 handleInputChange(
                   "palletWidth",
                   e.target.value,
-                  setLocalPalletWidth
+                  setTmpPalletWidth
                 )
               }
               onBlur={(e) =>
-                handleBlur("palletWidth", localPalletWidth, setLocalPalletWidth)
+                handleBlur("palletWidth", tmpPalletWidth, setTmpPalletWidth)
               }
               className="text-center border-2 rounded"
               type="number"
@@ -144,8 +143,8 @@ const DimensionsMenu = ({ className, ...props }) => {
               onClick={(e) =>
                 handleIncrement(
                   "palletWidth",
-                  localPalletWidth,
-                  setLocalPalletWidth
+                  tmpPalletWidth,
+                  setTmpPalletWidth
                 )
               }
             >
@@ -163,8 +162,8 @@ const DimensionsMenu = ({ className, ...props }) => {
               onClick={(e) =>
                 handleDecrement(
                   "palletHeight",
-                  localPalletHeight,
-                  setLocalPalletHeight
+                  tmpPalletHeight,
+                  setTmpPalletHeight
                 )
               }
             >
@@ -172,20 +171,16 @@ const DimensionsMenu = ({ className, ...props }) => {
             </Button>
             <input
               id="palletHeight"
-              value={localPalletHeight}
+              value={tmpPalletHeight}
               onChange={(e) =>
                 handleInputChange(
                   "palletHeight",
                   e.target.value,
-                  setLocalPalletHeight
+                  setTmpPalletHeight
                 )
               }
               onBlur={(e) =>
-                handleBlur(
-                  "palletHeight",
-                  localPalletHeight,
-                  setLocalPalletHeight
-                )
+                handleBlur("palletHeight", tmpPalletHeight, setTmpPalletHeight)
               }
               className="text-center border-2 rounded"
               type="number"
@@ -195,8 +190,8 @@ const DimensionsMenu = ({ className, ...props }) => {
               onClick={(e) =>
                 handleIncrement(
                   "palletHeight",
-                  localPalletHeight,
-                  setLocalPalletHeight
+                  tmpPalletHeight,
+                  setTmpPalletHeight
                 )
               }
             >

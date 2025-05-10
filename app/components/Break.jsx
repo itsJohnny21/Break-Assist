@@ -1,6 +1,7 @@
 import { OrbitControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import Pallet from "./Pallet"
+import Stack from "./Stack"
 import React, { useMemo } from "react"
 import { useAppContext } from "../context/AppContext"
 
@@ -8,7 +9,6 @@ const Break = ({ ...props }) => {
   const {
     palletDimensions,
     caseDimensions,
-    caseCount,
     upper,
     upperQuantity,
     lower,
@@ -17,13 +17,15 @@ const Break = ({ ...props }) => {
     palletCount,
   } = useAppContext()
 
+  const gap = caseDimensions.length * 2
+  const palletWidth = palletDimensions.length * caseDimensions.length
+
   const generatePalletPositions = (
-    palletDimensions,
-    caseDimensions,
-    numPallets
+    gap,
+    palletWidth,
+    numPallets,
+    caseDimensions
   ) => {
-    const gap = caseDimensions.length * 2
-    const palletWidth = palletDimensions.length * caseDimensions.length
     const totalWidth = palletWidth * numPallets + (numPallets - 1) * gap
 
     const startX = -totalWidth / 2 + palletWidth / 2
@@ -48,18 +50,18 @@ const Break = ({ ...props }) => {
   ) => {
     const { length: L, width: W } = palletDimensions
     const A = L * W
-    const numPallets = (upperQuantity + lowerQuantity) / A
     const perfectUpperPallets = Math.floor(upperQuantity / A)
-    const perfectLowerPallets = Math.floor(lowerQuantity / A)
+    const perfectLowerPallets = lower > 1 ? Math.floor(lowerQuantity / A) : 0
 
     const remainingUpperQuantity = upperQuantity % A
     const remainingLowerQuantity = lowerQuantity % A
     let index = 0
 
     const palletPositions = generatePalletPositions(
-      palletDimensions,
-      caseDimensions,
-      numPallets
+      gap,
+      palletWidth,
+      palletCount,
+      caseDimensions
     )
 
     const pallets = []
@@ -67,6 +69,7 @@ const Break = ({ ...props }) => {
     for (let i = 0; i < perfectUpperPallets; i++) {
       pallets.push(
         <Pallet
+          palletDimensions={palletDimensions}
           key={index}
           upper={upper}
           upperQuantity={A}
@@ -81,6 +84,7 @@ const Break = ({ ...props }) => {
     if (remainingUpperQuantity + remainingLowerQuantity === A) {
       pallets.push(
         <Pallet
+          palletDimensions={palletDimensions}
           key={index}
           upper={upper}
           upperQuantity={remainingUpperQuantity}
@@ -95,6 +99,7 @@ const Break = ({ ...props }) => {
     for (let i = 0; i < perfectLowerPallets; i++) {
       pallets.push(
         <Pallet
+          palletDimensions={palletDimensions}
           key={index}
           upper={upper}
           upperQuantity={0}
@@ -109,6 +114,76 @@ const Break = ({ ...props }) => {
     return pallets
   }
 
+  const generateStackPositions = (
+    palletDimensions,
+    numStacks,
+    caseDimensions,
+    startingPosition
+  ) => {
+    const positions = []
+    const deltaX = caseDimensions.length * 2
+
+    for (let i = 0; i < numStacks; i++) {
+      const x = startingPosition[0] + i * deltaX
+      const y =
+        startingPosition[1] -
+        (palletDimensions.height / 2) * caseDimensions.height
+      const z = startingPosition[2]
+      positions.push([x, y, z])
+    }
+
+    return positions
+  }
+
+  const createPlusStacks = (plus, maxHeight, startingPosition) => {
+    const numStacks = Math.ceil(plus / maxHeight)
+    const lower = Math.floor(plus / numStacks)
+    const upper = lower + 1
+    const numTallStacks = plus % numStacks
+    const numShortStacks = numStacks - numTallStacks
+
+    console.log(`lower: ${lower}`)
+    console.log(`upper: ${upper}`)
+
+    const stacks = []
+    let index = 0
+
+    const stackPositions = generateStackPositions(
+      palletDimensions,
+      numStacks,
+      caseDimensions,
+      startingPosition
+    )
+
+    for (let i = 0; i < numTallStacks; i++) {
+      stacks.push(
+        <Stack
+          key={index}
+          maxHeight={maxHeight}
+          height={upper}
+          position={stackPositions[index]}
+        />
+      )
+      index++
+    }
+
+    for (let i = 0; i < numShortStacks; i++) {
+      stacks.push(
+        <Stack
+          key={index}
+          maxHeight={maxHeight}
+          height={lower}
+          position={stackPositions[index]}
+        />
+      )
+      index++
+    }
+
+    console.log(stacks)
+
+    return stacks
+  }
+
   const pallets = createPallets(
     palletDimensions,
     upper,
@@ -117,7 +192,36 @@ const Break = ({ ...props }) => {
     lowerQuantity
   )
 
-  return <group>{pallets}</group>
+  let plusStacks = null
+  if (!isNaN(plus)) {
+    const totalWidth = palletWidth * palletCount + (palletCount - 1) * gap
+    const delta = palletWidth + gap
+    const startX =
+      -totalWidth / 2 +
+      palletWidth / 2 +
+      delta * (palletCount - 1) +
+      palletWidth / 2 +
+      caseDimensions.length * 2
+
+    const initialPosition = [startX, 0, caseDimensions.width]
+
+    if (pallets.length === 0) {
+      initialPosition[0] -= (palletWidth + gap) / 2 - caseDimensions.length / 2
+    }
+
+    plusStacks = createPlusStacks(
+      plus,
+      palletDimensions.height - 1,
+      initialPosition
+    )
+  }
+
+  return (
+    <>
+      <group>{pallets}</group>
+      {plusStacks && <group>{plusStacks}</group>}
+    </>
+  )
 }
 
 export default Break

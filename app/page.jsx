@@ -23,12 +23,12 @@ const Home = () => {
           style={{
             width: "70vw",
             height: "60vh",
-            background: "#ffffff",
+            background: "var(--background)",
           }}
         />
         <Incrementer className={"py-5"} />
         <BreakInfo className="my-4" />
-        <SettingsButton className={} width="40px" height="40px" />
+        <SettingsButton width="40px" height="40px" />
         <Footer />
       </div>
     </AppProvider>

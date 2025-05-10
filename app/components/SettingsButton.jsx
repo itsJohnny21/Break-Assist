@@ -5,14 +5,41 @@ import { useAppContext } from "../context/AppContext"
 import SettingsIcon from "../../public/assets/icons/SettingsIcon"
 
 const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
-  const { primaryColor, tertionaryColor } = useAppContext()
+  const {
+    primaryColor,
+    tertionaryColor,
+    palletLength,
+    palletHeight,
+    palletWidth,
+    setPalletLength,
+    setPalletHeight,
+    setPalletWidth,
+    tmpPalletLength,
+    tmpPalletHeight,
+    tmpPalletWidth,
+    setTmpPalletLength,
+    setTmpPalletHeight,
+    setTmpPalletWidth,
+  } = useAppContext()
   const settingsRef = useRef(null)
   const [showModal, setShowModal] = useState(null)
   const [visible, setVisible] = useState(false)
 
-  const handleSave = () => {}
-
   const handleCancel = () => {
+    setShowModal(false)
+  }
+
+  const handleReset = () => {
+    setTmpPalletLength(palletLength)
+    setTmpPalletHeight(palletHeight)
+    setTmpPalletWidth(palletWidth)
+  }
+
+  const handleSave = () => {
+    setPalletLength(tmpPalletLength)
+    setPalletHeight(tmpPalletHeight)
+    setPalletWidth(tmpPalletWidth)
+
     setShowModal(false)
   }
 
@@ -33,7 +60,6 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape" && showModal) {
-        console.log("heard you")
         setShowModal(false)
       }
     }

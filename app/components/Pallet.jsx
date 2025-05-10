@@ -2,26 +2,17 @@ import React from "react"
 import Stack from "./Stack"
 import { useAppContext } from "../context/AppContext"
 
-const Pallet = ({ position, ...props }) => {
-  const {
-    palletLength,
-    palletHeight,
-    palletWidth,
-    caseDimensions,
-    caseCount,
-    upper,
-    upperQuantity,
-    lower,
-    lowerQuantity,
-    plus,
-    palletCount,
-  } = useAppContext()
-
-  const palletDimensions = {
-    length: palletLength,
-    height: palletHeight,
-    width: palletWidth,
-  }
+const Pallet = ({
+  palletDimensions,
+  upper,
+  upperQuantity,
+  lower,
+  lowerQuantity,
+  opacity,
+  position = [0, 0, 0],
+  ...props
+}) => {
+  const { caseDimensions } = useAppContext()
 
   const generateStackPositions = (
     palletDimensions,
@@ -36,12 +27,12 @@ const Pallet = ({ position, ...props }) => {
 
     const [centerX, centerY, centerZ] = palletCenter
     const startX =
-      centerX - ((numCasesX - 1) * (caseDimensions.length + spacing)) / 2
+      centerX + ((numCasesX - 1) * (caseDimensions.length + spacing)) / 2
 
     const startY = centerY - (numCasesY * caseDimensions.height) / 2
 
     const startZ =
-      centerZ - ((numCasesZ - 1) * (caseDimensions.width + spacing)) / 2
+      centerZ + ((numCasesZ - 1) * (caseDimensions.width + spacing)) / 2
 
     const stackHeight = numCasesY
 
@@ -50,8 +41,8 @@ const Pallet = ({ position, ...props }) => {
     for (let i = 0; i < numCasesZ; i++) {
       const row = []
       for (let j = 0; j < numCasesX; j++) {
-        const xPos = startX + j * (caseDimensions.length + spacing)
-        const zPos = startZ + i * (caseDimensions.width + spacing)
+        const xPos = startX - j * (caseDimensions.length + spacing)
+        const zPos = startZ - i * (caseDimensions.width + spacing)
         const stackPosition = [xPos, startY, zPos]
 
         row.push([xPos, startY, zPos])
@@ -61,6 +52,7 @@ const Pallet = ({ position, ...props }) => {
     }
     return positions
   }
+
   const stackPositions = generateStackPositions(palletDimensions, position)
 
   const isDonut =
@@ -81,6 +73,7 @@ const Pallet = ({ position, ...props }) => {
             maxHeight={palletDimensions.height}
             height={lower}
             position={stackPosition}
+            opacity={opacity}
           />
         )
       }
@@ -93,6 +86,7 @@ const Pallet = ({ position, ...props }) => {
           maxHeight={palletDimensions.height}
           height={height}
           position={stackPosition}
+          opacity={opacity}
         />
       )
     })
