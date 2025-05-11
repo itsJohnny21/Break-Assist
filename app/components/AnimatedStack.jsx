@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react"
 import Stack from "./Stack"
 import { useFrame } from "@react-three/fiber"
 import { Vector3 } from "three"
+import { useAppContext } from "../context/AppContext"
 
 const AnimatedStack = ({
   position,
@@ -9,6 +10,7 @@ const AnimatedStack = ({
   animate = false,
   ...props
 }) => {
+  const { caseDimensions } = useAppContext()
   const ref = useRef()
   const [currentPosition] = useState(() => new Vector3(...position))
   const target = new Vector3(...targetPosition)
@@ -19,17 +21,18 @@ const AnimatedStack = ({
   useFrame(() => {
     if (!animate || !ref.current) return
 
-    currentPosition.x += 0.3
-    currentPosition.y += 0.1
-    currentPosition.z += 0.1
+    // currentPosition.x += 0.3
+    // currentPosition.y += 0.1
+    // currentPosition.z += 0.1
     // console.log(
     //   `going from ${currentPosition.x} ${currentPosition.y} ${currentPosition.z} to ${target.x} ${target.y} ${target.z}`
     // )
+    currentPosition.lerp(target, 1)
     ref.current.position.copy(currentPosition)
   })
 
   return (
-    <group ref={ref}>
+    <group ref={ref} position={position}>
       <Stack position={position} {...props} />
     </group>
   )

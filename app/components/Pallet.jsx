@@ -34,7 +34,7 @@ const Pallet = ({
 
   const generateStackPositions = (
     palletDimensions,
-    palletCenter,
+    caseDimensions,
     spacing = 0
   ) => {
     const {
@@ -43,31 +43,23 @@ const Pallet = ({
       width: numCasesZ,
     } = palletDimensions
 
-    const [centerX, centerY, centerZ] = palletCenter
-    const startX =
-      centerX + ((numCasesX - 1) * (caseDimensions.length + spacing)) / 2
-
-    const startY = centerY - (numCasesY * caseDimensions.height) / 2
-
-    const startZ =
-      centerZ + ((numCasesZ - 1) * (caseDimensions.width + spacing)) / 2
-
-    const stackHeight = numCasesY
+    const startX = ((numCasesX - 1) * (caseDimensions.length + spacing)) / 2
+    const startY = -(numCasesY * caseDimensions.height) / 2
+    const startZ = ((numCasesZ - 1) * (caseDimensions.width + spacing)) / 2
 
     const positions = []
 
     for (let i = 0; i < numCasesZ; i++) {
       const row = []
       for (let j = 0; j < numCasesX; j++) {
-        const xPos = startX - j * (caseDimensions.length + spacing)
-        const zPos = startZ - i * (caseDimensions.width + spacing)
-        const stackPosition = [xPos, startY, zPos]
-
+        const xPos = -startX + j * (caseDimensions.length + spacing)
+        const zPos = -startZ + i * (caseDimensions.width + spacing)
+        const idk = [xPos, startY, zPos]
         row.push([xPos, startY, zPos])
       }
-
       positions.push(row)
     }
+
     return positions
   }
 
@@ -77,7 +69,10 @@ const Pallet = ({
     setAnimate(true)
   }
 
-  const stackPositions = generateStackPositions(palletDimensions, position)
+  const stackPositions = generateStackPositions(
+    palletDimensions,
+    caseDimensions
+  )
 
   const targetPositions = generateTargetPositions(
     palletDimensions,
@@ -99,11 +94,12 @@ const Pallet = ({
     const row = stackPositions[i]
     for (let j = 0; j < row.length; j++) {
       const stackPosition = row[j]
+      console.log(stackPosition)
       const targetPosition = targetPositions[i * stackPositions.length + j]
 
       if (i === center && j === center && isDonut) {
         stacks.push(
-          <AnimatedStack
+          <Stack
             key={`${i}-${j}`}
             maxHeight={palletDimensions.height}
             height={lower}
@@ -117,7 +113,7 @@ const Pallet = ({
         index++
 
         stacks.push(
-          <AnimatedStack
+          <Stack
             key={`${i}-${j}`}
             maxHeight={palletDimensions.height}
             height={height}
@@ -130,7 +126,11 @@ const Pallet = ({
     }
   }
 
-  return <group onClick={handleClick}>{stacks}</group>
+  return (
+    <group position={position} onClick={handleClick}>
+      {stacks}
+    </group>
+  )
 }
 
 export default Pallet
