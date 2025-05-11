@@ -66,19 +66,6 @@ const Break = ({ position, ...props }) => {
     const unevenPallets = []
 
     let index = 0
-    let specialCase = false
-
-    if (
-      remainingLower % palletArea === 0 &&
-      lower === 1 &&
-      remainingUpper > 0 &&
-      remainingLower > 0 &&
-      !(remainingLower === palletArea)
-    ) {
-      remainingUpper -= 1
-      remainingLower -= palletArea - 1
-      specialCase = true
-    }
 
     if (
       Math.ceil(upperQuantity / (palletArea - 1)) -
@@ -125,25 +112,6 @@ const Break = ({ position, ...props }) => {
       })
 
       remainingLower -= palletArea
-    }
-
-    if (specialCase) {
-      unevenPallets.push({
-        upper,
-        upperQuantity: palletArea - 1,
-        lower,
-        lowerQuantity: 1,
-      })
-
-      remainingUpper -= palletArea - 1
-      remainingLower -= 1
-
-      unevenPallets.push({
-        upper,
-        upperQuantity: 1,
-        lower,
-        lowerQuantity: palletArea - 1,
-      })
     }
 
     if (

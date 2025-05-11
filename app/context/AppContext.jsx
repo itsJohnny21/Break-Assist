@@ -163,7 +163,6 @@ export const AppProvider = ({ children }) => {
       lowerQuantity % palletArea <= palletArea &&
       lower === 1
     ) {
-      console.log("hello")
       return Math.floor(upperQuantity / palletArea)
     }
     if (upper === 2 && upperQuantity === 0) {
