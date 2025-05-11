@@ -15,6 +15,7 @@ const Break = ({ position, ...props }) => {
     lowerQuantity,
     plus,
     palletCount,
+    maxHeightSingleStack,
   } = useAppContext()
 
   const gap = caseDimensions.length * 2
@@ -48,14 +49,9 @@ const Break = ({ position, ...props }) => {
     lower,
     lowerQuantity
   ) => {
-    const { length: L, width: W } = palletDimensions
-    const A = L * W
-    const perfectUpperPallets = Math.floor(upperQuantity / A)
-    const perfectLowerPallets = lower > 1 ? Math.floor(lowerQuantity / A) : 0
-
-    const remainingUpperQuantity = upperQuantity % A
-    const remainingLowerQuantity = lowerQuantity % A
-    let index = 0
+    let remainingUpper = upperQuantity
+    let remainingLower = lowerQuantity
+    const palletArea = palletDimensions.length * palletDimensions.width
 
     const palletPositions = generatePalletPositions(
       gap,
@@ -64,55 +60,132 @@ const Break = ({ position, ...props }) => {
       caseDimensions
     )
 
-    const pallets = []
+    const perfectUpperPallets = []
+    const perfectLowerPallets = []
+    const donutPallets = []
+    const unevenPallets = []
 
-    for (let i = 0; i < perfectUpperPallets; i++) {
-      pallets.push(
-        <Pallet
-          palletDimensions={palletDimensions}
-          key={index}
-          upper={upper}
-          upperQuantity={A}
-          lower={lower}
-          lowerQuantity={0}
-          position={palletPositions[index]}
-        />
-      )
+    let index = 0
+    let specialCase = false
+
+    if (
+      remainingLower % palletArea === 0 &&
+      lower === 1 &&
+      remainingUpper > 0 &&
+      remainingLower > 0 &&
+      !(remainingLower === palletArea)
+    ) {
+      remainingUpper -= 1
+      remainingLower -= palletArea - 1
+      specialCase = true
+    }
+
+    if (
+      Math.ceil(upperQuantity / (palletArea - 1)) -
+        (lowerQuantity % palletArea) >=
+        0 &&
+      (upperQuantity + lowerQuantity) % palletArea === 0
+    ) {
+      const numDonuts =
+        palletDimensions.length === palletDimensions.width &&
+        palletDimensions.length % 2 === 1
+          ? lowerQuantity % palletArea
+          : 0
+
+      for (let i = 0; i < numDonuts; i++) {
+        donutPallets.push({
+          upper,
+          upperQuantity: palletArea - 1,
+          lower,
+          lowerQuantity: 1,
+        })
+
+        remainingUpper -= palletArea - 1
+        remainingLower -= 1
+      }
+    }
+
+    while (remainingUpper >= palletArea) {
+      perfectUpperPallets.push({
+        upper,
+        upperQuantity: palletArea,
+        lower,
+        lowerQuantity: 0,
+      })
+
+      remainingUpper -= palletArea
+    }
+
+    while (remainingLower >= palletArea && lower > 1) {
+      perfectLowerPallets.push({
+        upper,
+        upperQuantity: 0,
+        lower,
+        lowerQuantity: palletArea,
+      })
+
+      remainingLower -= palletArea
+    }
+
+    if (specialCase) {
+      unevenPallets.push({
+        upper,
+        upperQuantity: palletArea - 1,
+        lower,
+        lowerQuantity: 1,
+      })
+
+      remainingUpper -= palletArea - 1
+      remainingLower -= 1
+
+      unevenPallets.push({
+        upper,
+        upperQuantity: 1,
+        lower,
+        lowerQuantity: palletArea - 1,
+      })
+    }
+
+    if (
+      remainingUpper + remainingLower >= palletArea &&
+      !(remainingUpper === 0 && remainingLower === palletArea)
+    ) {
+      unevenPallets.push({
+        upper,
+        upperQuantity: remainingUpper,
+        lower,
+        lowerQuantity: remainingLower,
+      })
+
+      remainingUpper -= remainingUpper
+      remainingLower -= remainingLower
       index++
     }
 
-    if (remainingUpperQuantity + remainingLowerQuantity === A) {
-      pallets.push(
-        <Pallet
-          palletDimensions={palletDimensions}
-          key={index}
-          upper={upper}
-          upperQuantity={remainingUpperQuantity}
-          lower={lower}
-          lowerQuantity={remainingLowerQuantity}
-          position={palletPositions[index]}
-        />
-      )
-      index++
-    }
+    const palletInfo = [
+      ...donutPallets,
+      ...perfectUpperPallets,
+      ...unevenPallets,
+      ...perfectLowerPallets,
+    ]
 
-    for (let i = 0; i < perfectLowerPallets; i++) {
-      pallets.push(
+    const pallets = palletInfo.map((palletInfo, i) => {
+      return (
         <Pallet
           palletDimensions={palletDimensions}
-          key={index}
-          upper={upper}
-          upperQuantity={0}
-          lower={lower}
-          lowerQuantity={A}
-          position={palletPositions[index]}
+          key={i}
+          upper={palletInfo.upper}
+          upperQuantity={palletInfo.upperQuantity}
+          lower={palletInfo.lower}
+          lowerQuantity={palletInfo.lowerQuantity}
+          position={palletPositions[i]}
         />
       )
-      index++
-    }
+    })
 
     return pallets
   }
+
   const generateStackPositions = (
     palletDimensions,
     numStacks,
@@ -208,11 +281,7 @@ const Break = ({ position, ...props }) => {
       initialPosition[0] -= (palletWidth + gap) / 2 - caseDimensions.length / 2
     }
 
-    plusStacks = createPlusStacks(
-      plus,
-      palletDimensions.height - 1,
-      initialPosition
-    )
+    plusStacks = createPlusStacks(plus, maxHeightSingleStack, initialPosition)
   }
 
   return (

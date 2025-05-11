@@ -7,11 +7,11 @@ import { useAppContext } from "../context/AppContext"
 const AnimatedStack = ({
   position,
   targetPosition,
-  animate = false,
+  animateState,
   ...props
 }) => {
-  const { caseDimensions } = useAppContext()
   const ref = useRef()
+  const [animate, setAnimate] = animateState
   const [currentPosition] = useState(() => new Vector3(...position))
   const target = new Vector3(...targetPosition)
 
@@ -20,6 +20,10 @@ const AnimatedStack = ({
 
     currentPosition.lerp(target, 0.05)
     ref.current.position.copy(currentPosition)
+
+    if (currentPosition.distanceTo(target) < 0.1) {
+      setAnimate(false)
+    }
   })
 
   return (

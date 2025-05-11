@@ -6,6 +6,8 @@ import React, {
   useEffect,
 } from "react"
 
+import { Vector3 } from "three"
+
 const AppContext = createContext()
 
 export const AppProvider = ({ children }) => {
@@ -32,17 +34,21 @@ export const AppProvider = ({ children }) => {
   const [palletColor, setPalletColor] = useState("#3377ff")
 
   const [palletLength, setPalletLength] = useState(3)
-  const [palletHeight, setPalletHeight] = useState(6)
+  const [palletHeight, setPalletHeight] = useState(2)
   const [palletWidth, setPalletWidth] = useState(3)
+  const [maxHeightSingleStack, setMaxHeightSingleStack] = useState(
+    palletHeight - 1
+  )
 
   const [tmpPalletLength, setTmpPalletLength] = useState(palletLength)
   const [tmpPalletWidth, setTmpPalletWidth] = useState(palletWidth)
   const [tmpPalletHeight, setTmpPalletHeight] = useState(palletHeight)
 
-  const [caseCount, setCaseCount] = useState(108)
+  const [caseCount, setCaseCount] = useState(27)
   const caseDimensions = { length: 2, height: 1.717, width: 2 }
   const maxProducts = 34
   const maxCaseCount = palletLength * palletHeight * palletWidth * 7
+  const cameraOffset = new Vector3(0, 10, 50)
 
   const [primaryColor, setPrimaryColor] = useState(null)
   const [secondaryColor, setSecondaryColor] = useState(null)
@@ -64,8 +70,6 @@ export const AppProvider = ({ children }) => {
 
     return positions
   })
-
-  console.log(deconstructedTargetPositions)
 
   const validateBetweenRange = (oldValue, newValue, min, max) => {
     const parsedValue = parseInt(newValue)
@@ -151,22 +155,22 @@ export const AppProvider = ({ children }) => {
     }
   }, [palletLength, palletHeight, palletWidth, caseCount])
 
-  const plus = useMemo(() => {
-    if (upper === 1) return upperQuantity
-    if (upper === 2 && upperQuantity === 0) return lowerQuantity
-    if (upper === palletHeight && lower === 1) return lowerQuantity
-    return NaN
-  }, [upper, upperQuantity, lower, lowerQuantity, palletHeight])
-
   const palletCount = useMemo(() => {
     const palletArea = palletLength * palletWidth
-    if (upper === palletHeight && lower === 1) {
+    if (
+      upperQuantity % palletArea === 0 &&
+      0 <= lowerQuantity % palletArea &&
+      lowerQuantity % palletArea <= palletArea &&
+      lower === 1
+    ) {
+      console.log("hello")
       return Math.floor(upperQuantity / palletArea)
-    } else if (upper === 2 && upperQuantity === 0) {
-      return Math.floor(upperQuantity / palletArea)
-    } else {
-      return Math.floor((upperQuantity + lowerQuantity) / palletArea)
     }
+    if (upper === 2 && upperQuantity === 0) {
+      return Math.floor(upperQuantity / palletArea)
+    }
+
+    return Math.floor((upperQuantity + lowerQuantity) / palletArea)
   }, [
     palletLength,
     palletHeight,
@@ -176,6 +180,23 @@ export const AppProvider = ({ children }) => {
     lower,
     lowerQuantity,
   ])
+
+  const plus = useMemo(() => {
+    const palletArea = palletDimensions.length * palletDimensions.width
+
+    if (upper === 1) return upperQuantity
+    if (upper === 2 && upperQuantity === 0) return lowerQuantity
+    if (upper === palletHeight && lower === 1) {
+      if (lowerQuantity === 0) {
+        return 0
+      }
+
+      const diff = -palletArea * palletCount + (upperQuantity + lowerQuantity)
+
+      if (diff > 0) return lowerQuantity
+    }
+    return NaN
+  }, [upper, upperQuantity, lower, lowerQuantity, palletHeight])
 
   return (
     <AppContext.Provider
@@ -211,7 +232,10 @@ export const AppProvider = ({ children }) => {
         setTmpPalletWidth,
         tmpPalletHeight,
         setTmpPalletHeight,
+        maxHeightSingleStack,
+        setMaxHeightSingleStack,
         deconstructedTargetPositions,
+        cameraOffset,
       }}
     >
       {children}
