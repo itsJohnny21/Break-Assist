@@ -5,7 +5,7 @@ import Stack from "./Stack"
 import React, { useMemo } from "react"
 import { useAppContext } from "../context/AppContext"
 
-const Break = ({ ...props }) => {
+const Break = ({ position = [0, 0, 0], ...props }) => {
   const {
     palletDimensions,
     caseDimensions,
@@ -213,8 +213,8 @@ const Break = ({ ...props }) => {
 
   return (
     <>
-      <group>{pallets}</group>
-      {plusStacks && <group>{plusStacks}</group>}
+      <group position={position}>{pallets}</group>
+      {plusStacks && <group position={position}>{plusStacks}</group>}
     </>
   )
 }

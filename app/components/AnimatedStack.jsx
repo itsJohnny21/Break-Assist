@@ -21,13 +21,7 @@ const AnimatedStack = ({
   useFrame(() => {
     if (!animate || !ref.current) return
 
-    // currentPosition.x += 0.3
-    // currentPosition.y += 0.1
-    // currentPosition.z += 0.1
-    // console.log(
-    //   `going from ${currentPosition.x} ${currentPosition.y} ${currentPosition.z} to ${target.x} ${target.y} ${target.z}`
-    // )
-    currentPosition.lerp(target, 1)
+    currentPosition.lerp(target, 0.05)
     ref.current.position.copy(currentPosition)
   })
 
