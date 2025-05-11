@@ -14,7 +14,7 @@ const Scene = ({ className, ...props }) => {
       <directionalLight position={[-2, 5, 2]} intensity={1} />
       <OrbitControls />
       <Stars />
-      <Break />
+      <Break position={[0, 0, 0]} />
       {/* <DeconstructedPallet /> */}
     </Canvas>
   )

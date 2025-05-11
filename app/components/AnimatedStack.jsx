@@ -14,9 +14,6 @@ const AnimatedStack = ({
   const ref = useRef()
   const [currentPosition] = useState(() => new Vector3(...position))
   const target = new Vector3(...targetPosition)
-  console.log(currentPosition)
-  console.log(target)
-  console.log("\n")
 
   useFrame(() => {
     if (!animate || !ref.current) return
@@ -27,7 +24,7 @@ const AnimatedStack = ({
 
   return (
     <group ref={ref} position={position}>
-      <Stack position={position} {...props} />
+      <Stack {...props} />
     </group>
   )
 }

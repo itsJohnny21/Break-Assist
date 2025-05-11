@@ -13,24 +13,7 @@ const Pallet = ({
   position = [0, 0, 0],
   ...props
 }) => {
-  const { caseDimensions } = useAppContext()
-
-  const generateTargetPositions = (palletDimensions, caseDimensions) => {
-    const A = palletDimensions.length * palletDimensions.width
-    const startX = -caseDimensions.length * (A - 1)
-    const startY = 0
-    const startZ = caseDimensions.width * 5
-    const delta = caseDimensions.length * 2
-
-    const positions = []
-
-    for (let i = 0; i < palletDimensions.length * palletDimensions.width; i++) {
-      const xPos = startX + delta * i
-      positions.push([xPos, startY, startZ])
-    }
-
-    return positions
-  }
+  const { caseDimensions, deconstructedTargetPositions } = useAppContext()
 
   const generateStackPositions = (
     palletDimensions,
@@ -52,9 +35,8 @@ const Pallet = ({
     for (let i = 0; i < numCasesZ; i++) {
       const row = []
       for (let j = 0; j < numCasesX; j++) {
-        const xPos = -startX + j * (caseDimensions.length + spacing)
-        const zPos = -startZ + i * (caseDimensions.width + spacing)
-        const idk = [xPos, startY, zPos]
+        const xPos = startX - j * (caseDimensions.length + spacing)
+        const zPos = startZ - i * (caseDimensions.width + spacing)
         row.push([xPos, startY, zPos])
       }
       positions.push(row)
@@ -74,11 +56,6 @@ const Pallet = ({
     caseDimensions
   )
 
-  const targetPositions = generateTargetPositions(
-    palletDimensions,
-    caseDimensions
-  )
-
   const isDonut =
     palletDimensions.length === palletDimensions.width &&
     palletDimensions.length % 2 === 1 &&
@@ -88,43 +65,26 @@ const Pallet = ({
   const center = Math.floor(palletDimensions.length / 2)
   let index = 0
 
-  const stacks = []
+  const stacks = stackPositions.map((row, i) =>
+    row.map((stackPosition, j) => {
+      const targetPosition =
+        deconstructedTargetPositions[i * stackPositions.length + j]
 
-  for (let i = 0; i < stackPositions.length; i++) {
-    const row = stackPositions[i]
-    for (let j = 0; j < row.length; j++) {
-      const stackPosition = row[j]
-      console.log(stackPosition)
-      const targetPosition = targetPositions[i * stackPositions.length + j]
+      const isCenter = i === center && j === center && isDonut
+      const height = isCenter ? lower : index++ < upperQuantity ? upper : lower
 
-      if (i === center && j === center && isDonut) {
-        stacks.push(
-          <Stack
-            key={`${i}-${j}`}
-            maxHeight={palletDimensions.height}
-            height={lower}
-            position={stackPosition}
-            targetPosition={targetPosition}
-            animate={animate}
-          />
-        )
-      } else {
-        const height = index < upperQuantity ? upper : lower
-        index++
-
-        stacks.push(
-          <Stack
-            key={`${i}-${j}`}
-            maxHeight={palletDimensions.height}
-            height={height}
-            position={stackPosition}
-            targetPosition={targetPosition}
-            animate={animate}
-          />
-        )
-      }
-    }
-  }
+      return (
+        <AnimatedStack
+          key={`${i}-${j}`}
+          maxHeight={palletDimensions.height}
+          height={height}
+          position={stackPosition}
+          targetPosition={targetPosition || stackPosition}
+          animate={animate}
+        />
+      )
+    })
+  )
 
   return (
     <group position={position} onClick={handleClick}>

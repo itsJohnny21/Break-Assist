@@ -39,7 +39,7 @@ export const AppProvider = ({ children }) => {
   const [tmpPalletWidth, setTmpPalletWidth] = useState(palletWidth)
   const [tmpPalletHeight, setTmpPalletHeight] = useState(palletHeight)
 
-  const [caseCount, setCaseCount] = useState(54)
+  const [caseCount, setCaseCount] = useState(108)
   const caseDimensions = { length: 2, height: 1.717, width: 2 }
   const maxProducts = 34
   const maxCaseCount = palletLength * palletHeight * palletWidth * 7
@@ -47,6 +47,25 @@ export const AppProvider = ({ children }) => {
   const [primaryColor, setPrimaryColor] = useState(null)
   const [secondaryColor, setSecondaryColor] = useState(null)
   const [tertionaryColor, setTertionaryColor] = useState(null)
+
+  const deconstructedTargetPositions = useMemo(() => {
+    const A = palletLength * palletWidth
+    const startX = caseDimensions.length * (A - 1)
+    const startY = 0
+    const startZ = caseDimensions.width * 5
+    const delta = caseDimensions.length * 2
+
+    const positions = []
+
+    for (let i = 0; i < palletLength * palletWidth; i++) {
+      const xPos = startX - delta * i
+      positions.push([xPos, startY, startZ])
+    }
+
+    return positions
+  })
+
+  console.log(deconstructedTargetPositions)
 
   const validateBetweenRange = (oldValue, newValue, min, max) => {
     const parsedValue = parseInt(newValue)
@@ -192,6 +211,7 @@ export const AppProvider = ({ children }) => {
         setTmpPalletWidth,
         tmpPalletHeight,
         setTmpPalletHeight,
+        deconstructedTargetPositions,
       }}
     >
       {children}

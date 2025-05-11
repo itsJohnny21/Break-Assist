@@ -5,7 +5,7 @@ import Stack from "./Stack"
 import React, { useMemo } from "react"
 import { useAppContext } from "../context/AppContext"
 
-const Break = ({ position = [0, 0, 0], ...props }) => {
+const Break = ({ position, ...props }) => {
   const {
     palletDimensions,
     caseDimensions,
@@ -113,22 +113,26 @@ const Break = ({ position = [0, 0, 0], ...props }) => {
 
     return pallets
   }
-
   const generateStackPositions = (
     palletDimensions,
     numStacks,
     caseDimensions,
-    startingPosition
+    numPallets
   ) => {
     const positions = []
     const deltaX = caseDimensions.length * 2
 
+    const totalWidth = palletWidth * numPallets + (numPallets - 1) * gap
+    const startX = totalWidth / 2 + gap + caseDimensions.length / 2
+
+    const y = -(palletDimensions.height / 2) * caseDimensions.height
+
+    const z =
+      (palletDimensions.width * caseDimensions.width) / 2 -
+      caseDimensions.width / 2
+
     for (let i = 0; i < numStacks; i++) {
-      const x = startingPosition[0] + i * deltaX
-      const y =
-        startingPosition[1] -
-        (palletDimensions.height / 2) * caseDimensions.height
-      const z = startingPosition[2]
+      const x = startX + i * deltaX
       positions.push([x, y, z])
     }
 
@@ -149,7 +153,7 @@ const Break = ({ position = [0, 0, 0], ...props }) => {
       palletDimensions,
       numStacks,
       caseDimensions,
-      startingPosition
+      palletCount
     )
 
     for (let i = 0; i < numTallStacks; i++) {

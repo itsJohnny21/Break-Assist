@@ -24,7 +24,6 @@ const Stack = ({ maxHeight, height, position, color, opacity, ...props }) => {
     return <Case key={i} position={pos} color={palletColor} opacity={opacity} />
   })
 
-  console.log(cases)
   return <group position={position}>{cases}</group>
 }
 
