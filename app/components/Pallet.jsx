@@ -4,6 +4,7 @@ import { Vector3 } from "three"
 import { useFrame, useThree } from "@react-three/fiber"
 import { useAppContext } from "../context/AppContext"
 import AnimatedStack from "./AnimatedStack"
+import * as THREE from "three"
 
 const Pallet = ({
   palletDimensions,
@@ -13,89 +14,56 @@ const Pallet = ({
   lowerQuantity,
   opacity,
   position = [0, 0, 0],
+  onClick,
+  isActive,
   ...props
 }) => {
-  const { caseDimensions, deconstructedTargetPositions, cameraOffset } =
-    useAppContext()
+  const {
+    caseDimensions,
+    deconstructedTargetPositions,
+    cameraHomePosition,
+    cameraHomeLookAt,
+  } = useAppContext()
 
-  const [targetCameraPosition, setTargetCameraPosition] = useState(cameraOffset)
-  const [animateCamera, setAnimateCamera] = useState(false)
-  const [animateStacks, setAnimateStacks] = useState(false)
   const { camera } = useThree()
+  const homeCameraPositionRef = useRef(new Vector3(...cameraHomePosition))
+  const homeLookAtRef = useRef(new Vector3(...cameraHomeLookAt))
   const palletRef = useRef()
-  const centerStackPositionRef = useRef(new Vector3())
-
-  const handlePalletClick = useCallback(
-    (stackPositions) => {
-      if (palletRef.current) {
-        // const worldPosition = new Vector3()
-        // palletRef.current.getWorldPosition(worldPosition)
-        // setTargetCameraPosition(
-        //   new Vector3().copy(worldPosition).add(cameraOffset)
-        // )
-
-        // const centerStackWorldPosition = new Vector3()
-        // if (stackPositions && stackPositions[stackPositions.length / 2]) {
-        //   const localCenterStackPosition = new Vector3(
-        //     ...stackPositions[stackPositions / 2]
-        //   )
-        //   palletRef.current.localToWorld(
-        //     centerStackWorldPosition.copy(localCenterStackPosition)
-        //   )
-        //   setTargetLookAt(centerStackWorldPosition)
-        //   centerStackPositionRef.current.copy(centerStackWorldPosition)
-        // }
-        setAnimateCamera(true)
-        setAnimateStacks(true)
-      }
-    },
-    [
-      setTargetCameraPosition,
-      setAnimateCamera,
-      cameraOffset,
-      // center,
-      // stackPositions,
-    ]
+  const centerIndex = Math.floor(
+    (palletDimensions.length * palletDimensions.width) / 2
   )
+  const centerDeconstructedStackPosition =
+    deconstructedTargetPositions[centerIndex]
 
-  useFrame(() => {
-    if (animateCamera) {
-      // const currentPosition = camera.position
-      // const target = targetCameraPosition
-      // currentPosition.lerp(target, 0.05)
-      // const currentLookAt = camera.getWorldDirection(new Vector3())
-      // const targetLookAtDirection = new Vector3()
-      // targetLookAtDirection
-      //   .subVectors(centerStackPositionRef.current, currentPosition)
-      //   .normalize()
-      // currentLookAt.lerp(targetLookAtDirection, 0.05)
-      // const matrix = new THREE.Matrix4()
-      // matrix.lookAt(currentPosition, centerStackPositionRef.current, camera.up)
-      // camera.rotation.setFromRotationMatrix(matrix)
-      // if (currentPosition.distanceTo(target) < 0.1) {
-      //   setAnimateCamera(false)
-      // }
+  // const palletWorldPosition = new Vector3()
+  // palletRef.current.getWorldPosition(palletWorldPosition)
+
+  // console.log(palletRef.current)
+
+  const targetCameraPositionRef = useRef(new Vector3())
+  // palletRef.current
+  //   .getWorldPosition(centerDeconstructedStackPosition)
+  //   .add(cameraHomePosition)
+
+  const targetLookAtRef = useRef(new Vector3())
+  const currentLookAtRef = useRef(new Vector3())
+
+  useEffect(() => {
+    if (palletRef.current) {
+      targetCameraPositionRef.current.copy(
+        palletRef.current
+          .getWorldPosition(new Vector3(...centerDeconstructedStackPosition))
+          .add(homeCameraPositionRef.current)
+      )
+
+      // targetLookAtRef.current.copy(
+      //   targetCameraPositionRef.current
+      //   // palletRef.current.getWorldPosition(
+      //   //   new Vector3(...centerDeconstructedStackPosition)
+      //   // )
+      // )
     }
-  })
-
-  // useEffect(() => {
-  //   if (
-  //     palletRef.current &&
-  //     stackPositions &&
-  //     stackPositions[center] &&
-  //     stackPositions[center][center]
-  //   ) {
-  //     const centerStackWorldPosition = new Vector3()
-  //     const localCenterStackPosition = new Vector3(
-  //       ...stackPositions[center][center]
-  //     )
-  //     palletRef.current.localToWorld(
-  //       centerStackWorldPosition.copy(localCenterStackPosition)
-  //     )
-  //     setTargetLookAt(centerStackWorldPosition)
-  //     centerStackPositionRef.current.copy(centerStackWorldPosition)
-  //   }
-  // }, [center, stackPositions])
+  }, [palletRef, centerDeconstructedStackPosition])
 
   const generateStackPositions = (
     palletDimensions,
@@ -115,13 +83,11 @@ const Pallet = ({
     const positions = []
 
     for (let i = 0; i < numCasesZ; i++) {
-      const row = []
       for (let j = 0; j < numCasesX; j++) {
         const xPos = startX - j * (caseDimensions.length + spacing)
         const zPos = startZ - i * (caseDimensions.width + spacing)
-        row.push([xPos, startY, zPos])
+        positions.push([xPos, startY, zPos])
       }
-      positions.push(row)
     }
 
     return positions
@@ -132,40 +98,82 @@ const Pallet = ({
     caseDimensions
   )
 
+  // const handlePalletClick = useCallback(
+  //   (e) => {
+  //     console.log(isActive)
+  //     console.log(e)
+  //     console.log("\n")
+  //     console.log(e)
+  //     if (animateIn) {
+  //       setAnimateIn(false)
+  //       setAnimateOut(true)
+  //     } else {
+  //       const palletWorldPosition = new Vector3()
+  // palletRef.current.getWorldPosition(palletWorldPosition)
+  //       const centerStackWorldPosition = palletRef.current.localToWorld(
+  //         new Vector3(...centerDeconstructedStackPosition)
+  //       )
+
+  //       currentLookAtRef.current.set(0, 0, 0)
+  //       targetLookAtRef.current.copy(centerStackWorldPosition)
+  //       targetCameraPositionRef.current.copy(
+  //         new Vector3().copy(centerStackWorldPosition).add(cameraHomePosition)
+  //       )
+
+  //       setAnimateIn(true)
+  //     }
+  //   },
+  //   [setAnimateIn, setAnimateOut]
+  // )
+
+  useFrame(() => {
+    if (isActive) {
+      const targetPosition = targetCameraPositionRef.current
+      camera.position.lerp(targetPosition, 0.05)
+      // const targetLookAt = targetLookAtRef.current
+      // currentLookAtRef.current.lerp(targetLookAt, 0.05)
+      // camera.lookAt(currentLookAtRef.current)
+    } else {
+      // const targetPosition = homeCameraPositionRef.current
+      // camera.position.lerp(targetPosition, 0.05)
+      // console.log(homeCameraPositionRef.current)
+      // const targetLookAt = homeLookAtRef.current
+      // currentLookAtRef.current.lerp(targetLookAt)
+      // camera.lookAt(currentLookAtRef.current)
+    }
+  })
+
   const isDonut =
     palletDimensions.length === palletDimensions.width &&
     palletDimensions.length % 2 === 1 &&
     upperQuantity === palletDimensions.length * palletDimensions.width - 1 &&
     lowerQuantity === 1
 
-  const centerRow = Math.floor(palletDimensions.length / 2)
-  const centerCol = Math.floor(palletDimensions.width / 2)
+  const stacks = []
   let index = 0
 
-  const stacks = stackPositions.map((row, i) =>
-    row.map((stackPosition, j) => {
-      const targetPosition =
-        deconstructedTargetPositions[i * stackPositions.length + j]
+  for (let i = 0; i < stackPositions.length; i++) {
+    const stackPosition = stackPositions[i]
+    const targetPosition = deconstructedTargetPositions[i]
 
-      const isCenter = i === centerRow && j === centerCol
-      const height =
-        isCenter && isDonut ? lower : index++ < upperQuantity ? upper : lower
+    const isCenter = i === centerIndex
+    const height =
+      isCenter && isDonut ? lower : index++ < upperQuantity ? upper : lower
 
-      return (
-        <AnimatedStack
-          key={`${i}-${j}`}
-          maxHeight={palletDimensions.height}
-          height={height}
-          position={stackPosition}
-          targetPosition={targetPosition || stackPosition}
-          animateState={[animateStacks, setAnimateStacks]}
-        />
-      )
-    })
-  )
+    stacks.push(
+      <AnimatedStack
+        key={i}
+        maxHeight={palletDimensions.height}
+        height={height}
+        position={stackPosition}
+        targetPosition={targetPosition}
+        isActive={isActive}
+      />
+    )
+  }
 
   return (
-    <group ref={palletRef} position={position} onClick={handlePalletClick}>
+    <group ref={palletRef} position={position} onClick={onClick}>
       {stacks}
     </group>
   )

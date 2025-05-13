@@ -34,21 +34,20 @@ export const AppProvider = ({ children }) => {
   const [palletColor, setPalletColor] = useState("#3377ff")
 
   const [palletLength, setPalletLength] = useState(3)
-  const [palletHeight, setPalletHeight] = useState(2)
+  const [palletHeight, setPalletHeight] = useState(6)
   const [palletWidth, setPalletWidth] = useState(3)
-  const [maxHeightSingleStack, setMaxHeightSingleStack] = useState(
-    palletHeight - 1
-  )
+  const [maxPlusHeight, setMaxPlusHeight] = useState(palletHeight - 1)
 
   const [tmpPalletLength, setTmpPalletLength] = useState(palletLength)
   const [tmpPalletWidth, setTmpPalletWidth] = useState(palletWidth)
   const [tmpPalletHeight, setTmpPalletHeight] = useState(palletHeight)
 
-  const [caseCount, setCaseCount] = useState(27)
+  const [caseCount, setCaseCount] = useState(306)
   const caseDimensions = { length: 2, height: 1.717, width: 2 }
   const maxProducts = 34
   const maxCaseCount = palletLength * palletHeight * palletWidth * 7
-  const cameraOffset = new Vector3(0, 10, 50)
+  const cameraHomePosition = [0, 10, 50]
+  const cameraHomeLookAt = [0, 0, 0]
 
   const [primaryColor, setPrimaryColor] = useState(null)
   const [secondaryColor, setSecondaryColor] = useState(null)
@@ -57,8 +56,9 @@ export const AppProvider = ({ children }) => {
   const deconstructedTargetPositions = useMemo(() => {
     const A = palletLength * palletWidth
     const startX = caseDimensions.length * (A - 1)
-    const startY = 0
-    const startZ = caseDimensions.width * 5
+    const startY =
+      (caseDimensions.height * palletHeight) / 2 + caseDimensions.height
+    const startZ = caseDimensions.width * 2
     const delta = caseDimensions.length * 2
 
     const positions = []
@@ -231,10 +231,11 @@ export const AppProvider = ({ children }) => {
         setTmpPalletWidth,
         tmpPalletHeight,
         setTmpPalletHeight,
-        maxHeightSingleStack,
-        setMaxHeightSingleStack,
+        maxPlusHeight,
+        setMaxPlusHeight,
         deconstructedTargetPositions,
-        cameraOffset,
+        cameraHomePosition,
+        cameraHomeLookAt,
       }}
     >
       {children}

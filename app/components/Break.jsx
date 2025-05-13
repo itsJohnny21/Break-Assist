@@ -2,7 +2,7 @@ import { OrbitControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import Pallet from "./Pallet"
 import Stack from "./Stack"
-import React, { useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import { useAppContext } from "../context/AppContext"
 
 const Break = ({ position, ...props }) => {
@@ -15,9 +15,10 @@ const Break = ({ position, ...props }) => {
     lowerQuantity,
     plus,
     palletCount,
-    maxHeightSingleStack,
+    maxPlusHeight,
   } = useAppContext()
 
+  const [activePalletIndex, setActivePalletIndex] = useState(null)
   const gap = caseDimensions.length * 2
   const palletWidth = palletDimensions.length * caseDimensions.length
 
@@ -147,6 +148,10 @@ const Break = ({ position, ...props }) => {
           lower={palletInfo.lower}
           lowerQuantity={palletInfo.lowerQuantity}
           position={palletPositions[i]}
+          isActive={activePalletIndex === i}
+          onClick={() => {
+            setActivePalletIndex(i)
+          }}
         />
       )
     })
@@ -249,7 +254,7 @@ const Break = ({ position, ...props }) => {
       initialPosition[0] -= (palletWidth + gap) / 2 - caseDimensions.length / 2
     }
 
-    plusStacks = createPlusStacks(plus, maxHeightSingleStack, initialPosition)
+    plusStacks = createPlusStacks(plus, maxPlusHeight, initialPosition)
   }
 
   return (
