@@ -19,6 +19,7 @@ const Break = ({ position, ...props }) => {
   } = useAppContext()
 
   const [activePalletIndex, setActivePalletIndex] = useState(null)
+  const [returnHomeIndex, setReturnHomeIndex] = useState(null)
   const gap = caseDimensions.length * 2
   const palletWidth = palletDimensions.length * caseDimensions.length
 
@@ -138,8 +139,10 @@ const Break = ({ position, ...props }) => {
       ...perfectLowerPallets,
     ]
 
+    let firstPallet = true
+
     const pallets = palletInfo.map((palletInfo, i) => {
-      return (
+      const pallet = (
         <Pallet
           palletDimensions={palletDimensions}
           key={i}
@@ -149,11 +152,22 @@ const Break = ({ position, ...props }) => {
           lowerQuantity={palletInfo.lowerQuantity}
           position={palletPositions[i]}
           isActive={activePalletIndex === i}
+          returnHome={firstPallet ? true : returnHomeIndex === i}
           onClick={() => {
-            setActivePalletIndex(i)
+            if (activePalletIndex === i) {
+              setReturnHomeIndex(i)
+              setActivePalletIndex(null)
+            } else {
+              setActivePalletIndex(i)
+              setReturnHomeIndex(null)
+            }
           }}
         />
       )
+
+      firstPallet = false
+
+      return pallet
     })
 
     return pallets

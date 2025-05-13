@@ -16,6 +16,7 @@ const Pallet = ({
   position = [0, 0, 0],
   onClick,
   isActive,
+  returnHome,
   ...props
 }) => {
   const {
@@ -26,8 +27,8 @@ const Pallet = ({
   } = useAppContext()
 
   const { camera } = useThree()
-  const homeCameraPositionRef = useRef(new Vector3(...cameraHomePosition))
-  const homeLookAtRef = useRef(new Vector3(...cameraHomeLookAt))
+  const homeCameraPosition = new Vector3(...cameraHomePosition)
+  const homeLookAt = new Vector3(...cameraHomeLookAt)
   const palletRef = useRef()
   const centerIndex = Math.floor(
     (palletDimensions.length * palletDimensions.width) / 2
@@ -35,35 +36,22 @@ const Pallet = ({
   const centerDeconstructedStackPosition =
     deconstructedTargetPositions[centerIndex]
 
-  // const palletWorldPosition = new Vector3()
-  // palletRef.current.getWorldPosition(palletWorldPosition)
-
-  // console.log(palletRef.current)
-
   const targetCameraPositionRef = useRef(new Vector3())
-  // palletRef.current
-  //   .getWorldPosition(centerDeconstructedStackPosition)
-  //   .add(cameraHomePosition)
-
   const targetLookAtRef = useRef(new Vector3())
   const currentLookAtRef = useRef(new Vector3())
 
   useEffect(() => {
     if (palletRef.current) {
-      targetCameraPositionRef.current.copy(
-        palletRef.current
-          .getWorldPosition(new Vector3(...centerDeconstructedStackPosition))
-          .add(homeCameraPositionRef.current)
+      const centerStackWorldPosition = palletRef.current.localToWorld(
+        new Vector3(...centerDeconstructedStackPosition)
       )
 
-      // targetLookAtRef.current.copy(
-      //   targetCameraPositionRef.current
-      //   // palletRef.current.getWorldPosition(
-      //   //   new Vector3(...centerDeconstructedStackPosition)
-      //   // )
-      // )
+      targetLookAtRef.current.copy(centerStackWorldPosition)
+      targetCameraPositionRef.current.copy(
+        centerStackWorldPosition.add(homeCameraPosition)
+      )
     }
-  }, [palletRef, centerDeconstructedStackPosition])
+  }, [])
 
   const generateStackPositions = (
     palletDimensions,
@@ -127,19 +115,21 @@ const Pallet = ({
   // )
 
   useFrame(() => {
+    let targetPosition
+    let targetLookAt
+
     if (isActive) {
-      const targetPosition = targetCameraPositionRef.current
+      targetPosition = targetCameraPositionRef.current
+      targetLookAt = targetLookAtRef.current
+    } else if (returnHome) {
+      targetPosition = homeCameraPosition
+      targetLookAt = homeLookAt
+    }
+
+    if (targetLookAt && targetPosition) {
       camera.position.lerp(targetPosition, 0.05)
-      // const targetLookAt = targetLookAtRef.current
-      // currentLookAtRef.current.lerp(targetLookAt, 0.05)
-      // camera.lookAt(currentLookAtRef.current)
-    } else {
-      // const targetPosition = homeCameraPositionRef.current
-      // camera.position.lerp(targetPosition, 0.05)
-      // console.log(homeCameraPositionRef.current)
-      // const targetLookAt = homeLookAtRef.current
-      // currentLookAtRef.current.lerp(targetLookAt)
-      // camera.lookAt(currentLookAtRef.current)
+      currentLookAtRef.current.lerp(targetLookAt, 0.05)
+      camera.lookAt(currentLookAtRef.current)
     }
   })
 
