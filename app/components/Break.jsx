@@ -1,11 +1,12 @@
-import { OrbitControls } from "@react-three/drei"
+import { OrbitControls, Plane } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import Pallet from "./Pallet"
 import Stack from "./Stack"
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
+import { useThree } from "@react-three/fiber"
 import { useAppContext } from "../context/AppContext"
 
-const Break = ({ position, ...props }) => {
+const Break = ({ position, orbitControlsRef, ...props }) => {
   const {
     palletDimensions,
     caseDimensions,
@@ -22,6 +23,23 @@ const Break = ({ position, ...props }) => {
   const [returnHomeIndex, setReturnHomeIndex] = useState(null)
   const gap = caseDimensions.length * 2
   const palletWidth = palletDimensions.length * caseDimensions.length
+
+  const { gl } = useThree()
+
+  // useEffect(() => {
+  //   const handlePointerUp = () => {
+  //     if (activePalletIndex !== null) {
+  //       setReturnHomeIndex(activePalletIndex)
+  //       setActivePalletIndex(null)
+  //     }
+  //   }
+
+  //   gl.domElement.addEventListener("pointerup", handlePointerUp)
+
+  //   return () => {
+  //     gl.domElement.removeEventListener("pointerup", handlePointerUp)
+  //   }
+  // }, [gl, activePalletIndex])
 
   const generatePalletPositions = (
     gap,
@@ -139,8 +157,6 @@ const Break = ({ position, ...props }) => {
       ...perfectLowerPallets,
     ]
 
-    let firstPallet = true
-
     const pallets = palletInfo.map((palletInfo, i) => {
       const pallet = (
         <Pallet
@@ -152,7 +168,8 @@ const Break = ({ position, ...props }) => {
           lowerQuantity={palletInfo.lowerQuantity}
           position={palletPositions[i]}
           isActive={activePalletIndex === i}
-          returnHome={firstPallet ? true : returnHomeIndex === i}
+          returnHome={returnHomeIndex === i}
+          orbitControlsRef={orbitControlsRef}
           onClick={() => {
             if (activePalletIndex === i) {
               setReturnHomeIndex(i)
@@ -164,8 +181,6 @@ const Break = ({ position, ...props }) => {
           }}
         />
       )
-
-      firstPallet = false
 
       return pallet
     })

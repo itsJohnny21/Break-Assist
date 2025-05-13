@@ -17,6 +17,7 @@ const Pallet = ({
   onClick,
   isActive,
   returnHome,
+  orbitControlsRef,
   ...props
 }) => {
   const {
@@ -24,7 +25,11 @@ const Pallet = ({
     deconstructedTargetPositions,
     cameraHomePosition,
     cameraHomeLookAt,
+    deconstructedGap,
   } = useAppContext()
+
+  const [isActiveAnimate, setIsActiveAnimate] = useState(isActive)
+  const [returnHomeAnimate, setReturnHomeAnimate] = useState(returnHome)
 
   const { camera } = useThree()
   const homeCameraPosition = new Vector3(...cameraHomePosition)
@@ -46,12 +51,18 @@ const Pallet = ({
         new Vector3(...centerDeconstructedStackPosition)
       )
 
-      targetLookAtRef.current.copy(centerStackWorldPosition)
       targetCameraPositionRef.current.copy(
         centerStackWorldPosition.add(homeCameraPosition)
       )
+      targetLookAtRef.current.copy(centerStackWorldPosition)
+
+      if ((palletDimensions.length * palletDimensions.width) % 2 === 0) {
+        const deltaX = deconstructedGap / 2
+        targetCameraPositionRef.current.add(new Vector3(deltaX, 0, 0))
+        targetLookAtRef.current.add(new Vector3(deltaX, 0, 0))
+      }
     }
-  }, [])
+  }, [palletRef, centerDeconstructedStackPosition, isActive, returnHome])
 
   const generateStackPositions = (
     palletDimensions,
@@ -86,33 +97,13 @@ const Pallet = ({
     caseDimensions
   )
 
-  // const handlePalletClick = useCallback(
-  //   (e) => {
-  //     console.log(isActive)
-  //     console.log(e)
-  //     console.log("\n")
-  //     console.log(e)
-  //     if (animateIn) {
-  //       setAnimateIn(false)
-  //       setAnimateOut(true)
-  //     } else {
-  //       const palletWorldPosition = new Vector3()
-  // palletRef.current.getWorldPosition(palletWorldPosition)
-  //       const centerStackWorldPosition = palletRef.current.localToWorld(
-  //         new Vector3(...centerDeconstructedStackPosition)
-  //       )
+  // useEffect(() => {
+  //   setIsActiveAnimate(isActive)
+  // }, [isActive])
 
-  //       currentLookAtRef.current.set(0, 0, 0)
-  //       targetLookAtRef.current.copy(centerStackWorldPosition)
-  //       targetCameraPositionRef.current.copy(
-  //         new Vector3().copy(centerStackWorldPosition).add(cameraHomePosition)
-  //       )
-
-  //       setAnimateIn(true)
-  //     }
-  //   },
-  //   [setAnimateIn, setAnimateOut]
-  // )
+  // useEffect(() => {
+  //   setReturnHomeAnimate(returnHome)
+  // }, [returnHome])
 
   useFrame(() => {
     let targetPosition
@@ -121,17 +112,55 @@ const Pallet = ({
     if (isActive) {
       targetPosition = targetCameraPositionRef.current
       targetLookAt = targetLookAtRef.current
-    } else if (returnHome) {
-      targetPosition = homeCameraPosition
-      targetLookAt = homeLookAt
-    }
-
-    if (targetLookAt && targetPosition) {
+      // orbitControlsRef.current.enabled = false
       camera.position.lerp(targetPosition, 0.05)
       currentLookAtRef.current.lerp(targetLookAt, 0.05)
       camera.lookAt(currentLookAtRef.current)
+    } else if (returnHome) {
+      targetPosition = homeCameraPosition
+      targetLookAt = homeLookAt
+      camera.position.lerp(targetPosition, 0.1)
+      currentLookAtRef.current.lerp(targetLookAt, 0.1)
+      camera.lookAt(currentLookAtRef.current)
     }
+    // if (!isActiveAnimate && !returnHomeAnimate) return
+
+    // let targetPosition
+    // let targetLookAt
+
+    // if (isActiveAnimate) {
+    //   targetPosition = targetCameraPositionRef.current
+    //   targetLookAt = targetLookAtRef.current
+    //   orbitControlsRef.current.enabled = false
+
+    //   if (
+    //     camera.position.distanceTo(targetPosition) >= 0.1 ||
+    //     currentLookAtRef.current.distanceTo(targetLookAt) >= 0.1
+    //   ) {
+    //     camera.position.lerp(targetPosition, 0.05)
+    //     currentLookAtRef.current.lerp(targetLookAt, 0.05)
+    //     camera.lookAt(currentLookAtRef.current)
+    //   } else {
+    //     setIsActiveAnimate(false)
+    //   }
+    // } else if (returnHomeAnimate) {
+    //   // targetPosition = homeCameraPosition
+    //   // targetLookAt = homeLookAt
+    //   // if (
+    //   //   camera.position.distanceTo(targetPosition) >= 0.1 ||
+    //   //   currentLookAtRef.current.distanceTo(targetLookAt) >= 0.1
+    //   // ) {
+    //   //   camera.position.lerp(targetPosition, 0.1)
+    //   //   currentLookAtRef.current.lerp(targetLookAt, 0.1)
+    //   //   camera.lookAt(currentLookAtRef.current)
+    //   // } else {
+    //   //   setReturnHomeAnimate(false)
+    //   //   orbitControlsRef.current.enabled = true
+    //   // }
+    // }
   })
+
+  //todo: make the color of pallets changable and make settings use url instead of state vars and add spacing to deconstructed center stack when area is even
 
   const isDonut =
     palletDimensions.length === palletDimensions.width &&

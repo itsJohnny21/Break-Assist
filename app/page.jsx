@@ -21,7 +21,7 @@ const Home = () => {
         <Header />
         <Scene
           style={{
-            width: "70vw",
+            width: "100vw",
             height: "60vh",
             background: "var(--background)",
           }}

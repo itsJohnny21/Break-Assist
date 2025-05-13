@@ -53,13 +53,15 @@ export const AppProvider = ({ children }) => {
   const [secondaryColor, setSecondaryColor] = useState(null)
   const [tertionaryColor, setTertionaryColor] = useState(null)
 
+  const deconstructedGap = caseDimensions.length * 2
+
   const deconstructedTargetPositions = useMemo(() => {
     const A = palletLength * palletWidth
     const startX = caseDimensions.length * (A - 1)
     const startY =
       (caseDimensions.height * palletHeight) / 2 + caseDimensions.height
     const startZ = caseDimensions.width * 2
-    const delta = caseDimensions.length * 2
+    const delta = deconstructedGap
 
     const positions = []
 
@@ -236,6 +238,7 @@ export const AppProvider = ({ children }) => {
         deconstructedTargetPositions,
         cameraHomePosition,
         cameraHomeLookAt,
+        deconstructedGap,
       }}
     >
       {children}

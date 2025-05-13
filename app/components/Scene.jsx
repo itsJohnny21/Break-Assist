@@ -10,20 +10,15 @@ import { useAppContext } from "../context/AppContext"
 
 const Scene = ({ className, ...props }) => {
   const { cameraHomePosition, cameraHomeLookAt } = useAppContext()
-  // useEffect(() => {
-  //   if (cameraRef.current) {
-  //     cameraRef.current.position.set(...cameraHomePosition)
-  //     cameraRef.current.lookAt(...cameraHomeLookAt)
-  //   }
-  // }, [cameraHomePosition, cameraHomeLookAt])
+  const orbitControlsRef = useRef()
 
   return (
     <Canvas camera={{ fov: 30, position: cameraHomePosition }} {...props}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[-2, 5, 2]} intensity={1} />
-      <OrbitControls />
+      <OrbitControls ref={orbitControlsRef} />
       <Stars />
-      <Break position={[0, 0, 0]} />
+      <Break position={[0, 0, 0]} orbitControlsRef={orbitControlsRef} />
     </Canvas>
   )
 }
