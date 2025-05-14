@@ -51,7 +51,11 @@ const Pallet = ({
         new Vector3(...centerDeconstructedStackPosition)
       )
 
-      targetLookAtRef.current.copy(centerStackWorldPosition)
+      targetLookAtRef.current
+        .copy(centerStackWorldPosition)
+        .add(
+          new Vector3(0, (palletDimensions.height * caseDimensions.height) / 2)
+        )
       targetCameraPositionRef.current.copy(
         centerStackWorldPosition.add(homeCameraPosition)
       )
@@ -62,7 +66,7 @@ const Pallet = ({
         targetLookAtRef.current.add(new Vector3(deltaX, 0, 0))
       }
     }
-  }, [centerDeconstructedStackPosition])
+  }, [centerDeconstructedStackPosition, palletDimensions])
 
   const generateStackPositions = (
     palletDimensions,

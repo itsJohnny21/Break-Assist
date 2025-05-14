@@ -20,7 +20,6 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
     setTmpPalletLength,
     setTmpPalletHeight,
     setTmpPalletWidth,
-    setMaxPlusHeight,
   } = useAppContext()
   const settingsRef = useRef(null)
   const [showModal, setShowModal] = useState(null)
@@ -40,7 +39,6 @@ const SettingsButton = ({ className, innerRef, width, height, ...props }) => {
     setPalletLength(tmpPalletLength)
     setPalletHeight(tmpPalletHeight)
     setPalletWidth(tmpPalletWidth)
-    setMaxPlusHeight(tmpPalletHeight - 1)
 
     setShowModal(false)
   }

@@ -6,14 +6,11 @@ import React, {
   useEffect,
 } from "react"
 
-import { useSearchParams, useRouter } from "next/navigation"
+import { Vector3 } from "three"
 
 const AppContext = createContext()
 
 export const AppProvider = ({ children }) => {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-
   useEffect(() => {
     const rootElement = window.document.documentElement
     const computedStyle = window.getComputedStyle(rootElement)
@@ -34,19 +31,46 @@ export const AppProvider = ({ children }) => {
     }
   }, [])
 
-  const [palletColor, setPalletColor] = useState(null)
-  const [palletLength, setPalletLength] = useState(null)
-  const [palletHeight, setPalletHeight] = useState(null)
-  const [palletWidth, setPalletWidth] = useState(null)
-  const [caseCount, setCaseCount] = useState(2)
+  const [palletColor, setPalletColor] = useState("#3377ff")
 
-  const validateHexColor = (currentValue, newValue) => {
-    if (/^#[0-9A-Fa-f]{6}$/.test(newValue)) {
-      return newValue
-    } else {
-      return currentValue
+  const [palletLength, setPalletLength] = useState(3)
+  const [palletHeight, setPalletHeight] = useState(6)
+  const [palletWidth, setPalletWidth] = useState(3)
+
+  const [tmpPalletLength, setTmpPalletLength] = useState(palletLength)
+  const [tmpPalletWidth, setTmpPalletWidth] = useState(palletWidth)
+  const [tmpPalletHeight, setTmpPalletHeight] = useState(palletHeight)
+
+  const [caseCount, setCaseCount] = useState(306)
+  const caseDimensions = { length: 2, height: 1.717, width: 2 }
+  const maxProducts = 34
+  const maxCaseCount = 500
+  const cameraHomePosition = [0, 10, 50]
+  const cameraHomeLookAt = [0, 0, 0]
+
+  const [primaryColor, setPrimaryColor] = useState(null)
+  const [secondaryColor, setSecondaryColor] = useState(null)
+  const [tertionaryColor, setTertionaryColor] = useState(null)
+
+  const deconstructedGap = caseDimensions.length * 2
+
+  const deconstructedTargetPositions = useMemo(() => {
+    const A = palletLength * palletWidth
+    const startX = caseDimensions.length * (A - 1)
+    const startY =
+      (caseDimensions.height * palletHeight) / 2 + caseDimensions.height * 2
+    const startZ = caseDimensions.width * 2
+    const delta = deconstructedGap
+
+    const positions = []
+
+    for (let i = 0; i < palletLength * palletWidth; i++) {
+      const xPos = startX - delta * i
+      positions.push([xPos, startY, startZ])
     }
-  }
+
+    return positions
+  }, [palletLength, palletWidth, palletHeight])
 
   const validateBetweenRange = (oldValue, newValue, min, max) => {
     const parsedValue = parseInt(newValue)
@@ -68,96 +92,18 @@ export const AppProvider = ({ children }) => {
 
   const settings = {
     palletLength: {
-      defaultValue: 3,
-      value: palletLength,
-      set: setPalletLength,
       validator: (newValue) =>
         validateBetweenRange(palletLength, newValue, 2, 11),
     },
     palletHeight: {
-      defaultValue: 6,
-      value: palletHeight,
-      set: setPalletHeight,
       validator: (newValue) =>
         validateBetweenRange(palletHeight, newValue, 2, 11),
     },
     palletWidth: {
-      defaultValue: 3,
-      value: palletWidth,
-      set: setPalletWidth,
       validator: (newValue) =>
         validateBetweenRange(palletWidth, newValue, 2, 11),
     },
-    caseCount: {
-      defaultValue: 53,
-      value: caseCount,
-      set: setCaseCount,
-      validator: (newValue) =>
-        validateBetweenRange(caseCount, newValue, 0, maxCaseCount),
-    },
-    palletColor: {
-      defaultValue: "#3377ff",
-      value: palletColor,
-      set: setPalletColor,
-      validator: (newValue) => validateHexColor(palletColor, newValue),
-    },
   }
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString())
-
-    Object.keys(settings).forEach((key) => {
-      if (params.has(key)) {
-        const value = params.get(key)
-        const parsedValue = isNaN(value) ? value : Number(value)
-
-        if (settings[key].validator(parsedValue) !== "") {
-          settings[key].set(parsedValue)
-        } else {
-          settings[key].set(settings[key].defaultValue)
-        }
-      } else {
-        params.set(key, settings[key].defaultValue)
-        settings[key].set(settings[key].defaultValue)
-      }
-
-      router.replace(`?${params.toString()}`, { scroll: false })
-    })
-  }, [searchParams, router])
-
-  const [primaryColor, setPrimaryColor] = useState(null)
-  const [secondaryColor, setSecondaryColor] = useState(null)
-  const [tertionaryColor, setTertionaryColor] = useState(null)
-
-  const [tmpPalletLength, setTmpPalletLength] = useState(palletLength)
-  const [tmpPalletWidth, setTmpPalletWidth] = useState(palletWidth)
-  const [tmpPalletHeight, setTmpPalletHeight] = useState(palletHeight)
-
-  const caseDimensions = { length: 2, height: 1.717, width: 2 }
-  const maxProducts = 34
-  const maxCaseCount = 500
-  const cameraHomePosition = [0, 10, 50]
-  const cameraHomeLookAt = [0, 0, 0]
-
-  const deconstructedGap = caseDimensions.length * 2
-
-  const deconstructedTargetPositions = useMemo(() => {
-    const A = palletLength * palletWidth
-    const startX = caseDimensions.length * (A - 1)
-    const startY =
-      (caseDimensions.height * palletHeight) / 2 + caseDimensions.height
-    const startZ = caseDimensions.width * 2
-    const delta = deconstructedGap
-
-    const positions = []
-
-    for (let i = 0; i < palletLength * palletWidth; i++) {
-      const xPos = startX - delta * i
-      positions.push([xPos, startY, startZ])
-    }
-
-    return positions
-  })
 
   const palletDimensions = useMemo(
     () => ({

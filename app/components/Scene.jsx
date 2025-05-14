@@ -21,7 +21,7 @@ const Scene = ({ className, ...props }) => {
         ref={orbitControlsRef}
         target={cameraHomeLookAt}
         enablePan={false}
-        enableZoom={false}
+        enableZoom={true}
         enableRotate={true}
       />
       <Stars />
