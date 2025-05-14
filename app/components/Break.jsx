@@ -16,7 +16,6 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
     lowerQuantity,
     plus,
     palletCount,
-    maxPlusHeight,
   } = useAppContext()
 
   const [activePalletIndex, setActivePalletIndex] = useState(null)
@@ -268,7 +267,9 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
     lowerQuantity
   )
 
-  const plusStacks = !isNaN(plus) ? createPlusStacks(plus, maxPlusHeight) : null
+  const plusStacks = !isNaN(plus)
+    ? createPlusStacks(plus, palletDimensions.height - 1)
+    : null
 
   return (
     <>
