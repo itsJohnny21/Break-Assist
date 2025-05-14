@@ -44,7 +44,7 @@ export const AppProvider = ({ children }) => {
   const [activePalletIndex, setActivePalletIndex] = useState(null)
   const [returnHomeIndex, setReturnHomeIndex] = useState(null)
 
-  const [caseCount, setCaseCount] = useState(306)
+  const [caseCount, setCaseCount] = useState(159)
   const caseDimensions = { length: 2, height: 1.717, width: 2 }
   const maxProducts = 34
   const maxCaseCount = 500
