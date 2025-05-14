@@ -41,6 +41,9 @@ export const AppProvider = ({ children }) => {
   const [tmpPalletWidth, setTmpPalletWidth] = useState(palletWidth)
   const [tmpPalletHeight, setTmpPalletHeight] = useState(palletHeight)
 
+  const [activePalletIndex, setActivePalletIndex] = useState(null)
+  const [returnHomeIndex, setReturnHomeIndex] = useState(null)
+
   const [caseCount, setCaseCount] = useState(306)
   const caseDimensions = { length: 2, height: 1.717, width: 2 }
   const maxProducts = 34
@@ -236,6 +239,10 @@ export const AppProvider = ({ children }) => {
         cameraHomePosition,
         cameraHomeLookAt,
         deconstructedGap,
+        activePalletIndex,
+        setActivePalletIndex,
+        returnHomeIndex,
+        setReturnHomeIndex,
       }}
     >
       {children}

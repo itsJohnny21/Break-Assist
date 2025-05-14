@@ -16,10 +16,12 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
     lowerQuantity,
     plus,
     palletCount,
+    activePalletIndex,
+    setActivePalletIndex,
+    returnHomeIndex,
+    setReturnHomeIndex,
   } = useAppContext()
 
-  const [activePalletIndex, setActivePalletIndex] = useState(null)
-  const [returnHomeIndex, setReturnHomeIndex] = useState(null)
   const gap = caseDimensions.length * 2
   const palletActualWidth = palletDimensions.length * caseDimensions.length
 

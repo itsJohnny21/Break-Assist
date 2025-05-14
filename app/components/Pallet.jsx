@@ -66,7 +66,7 @@ const Pallet = ({
         targetLookAtRef.current.add(new Vector3(deltaX, 0, 0))
       }
     }
-  }, [centerDeconstructedStackPosition, palletDimensions])
+  }, [centerDeconstructedStackPosition, palletDimensions, isActive, returnHome])
 
   const generateStackPositions = (
     palletDimensions,

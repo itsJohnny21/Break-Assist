@@ -2,7 +2,14 @@ import { useAppContext } from "../context/AppContext"
 import Button from "./Button"
 
 const Incrementer = ({ className, ...props }) => {
-  const { maxCaseCount, caseCount, setCaseCount } = useAppContext()
+  const {
+    maxCaseCount,
+    caseCount,
+    setCaseCount,
+    setActivePalletIndex,
+    setReturnHomeIndex,
+    activePalletIndex,
+  } = useAppContext()
 
   const handleIncrement = () => {
     setCaseCount((prevCount) => Math.min(prevCount + 1, maxCaseCount))
@@ -27,6 +34,9 @@ const Incrementer = ({ className, ...props }) => {
     } else {
       setCaseCount("")
     }
+
+    setActivePalletIndex(null)
+    setReturnHomeIndex(0)
   }
 
   return (
