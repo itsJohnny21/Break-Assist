@@ -16,7 +16,14 @@ const Scene = ({ className, ...props }) => {
     <Canvas camera={{ fov: 30, position: cameraHomePosition }} {...props}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[-2, 5, 2]} intensity={1} />
-      <OrbitControls ref={orbitControlsRef} />
+      <OrbitControls
+        ref={orbitControlsRef}
+        ref={orbitControlsRef}
+        target={cameraHomeLookAt}
+        enablePan={false}
+        enableZoom={false}
+        enableRotate={true}
+      />
       <Stars />
       <Break position={[0, 0, 0]} orbitControlsRef={orbitControlsRef} />
     </Canvas>

@@ -22,35 +22,35 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
   const [activePalletIndex, setActivePalletIndex] = useState(null)
   const [returnHomeIndex, setReturnHomeIndex] = useState(null)
   const gap = caseDimensions.length * 2
-  const palletWidth = palletDimensions.length * caseDimensions.length
+  const palletActualWidth = palletDimensions.length * caseDimensions.length
 
   const { gl } = useThree()
 
-  // useEffect(() => {
-  //   const handlePointerUp = () => {
-  //     if (activePalletIndex !== null) {
-  //       setReturnHomeIndex(activePalletIndex)
-  //       setActivePalletIndex(null)
-  //     }
-  //   }
+  useEffect(() => {
+    const handlePointerUp = () => {
+      if (activePalletIndex !== null) {
+        setReturnHomeIndex(activePalletIndex)
+        setActivePalletIndex(null)
+      }
+    }
 
-  //   gl.domElement.addEventListener("pointerup", handlePointerUp)
+    gl.domElement.addEventListener("pointerup", handlePointerUp)
 
-  //   return () => {
-  //     gl.domElement.removeEventListener("pointerup", handlePointerUp)
-  //   }
-  // }, [gl, activePalletIndex])
+    return () => {
+      gl.domElement.removeEventListener("pointerup", handlePointerUp)
+    }
+  }, [gl, activePalletIndex])
 
   const generatePalletPositions = (
     gap,
-    palletWidth,
+    palletActualWidth,
     numPallets,
     caseDimensions
   ) => {
-    const totalWidth = palletWidth * numPallets + (numPallets - 1) * gap
+    const totalWidth = palletActualWidth * numPallets + (numPallets - 1) * gap
 
-    const startX = -totalWidth / 2 + palletWidth / 2
-    const delta = palletWidth + gap
+    const startX = -totalWidth / 2 + palletActualWidth / 2
+    const delta = palletActualWidth + gap
 
     const positions = []
 
@@ -75,7 +75,7 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
 
     const palletPositions = generatePalletPositions(
       gap,
-      palletWidth,
+      palletActualWidth,
       palletCount,
       caseDimensions
     )
@@ -172,7 +172,6 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
           orbitControlsRef={orbitControlsRef}
           onClick={() => {
             if (activePalletIndex === i) {
-              setReturnHomeIndex(i)
               setActivePalletIndex(null)
             } else {
               setActivePalletIndex(i)
@@ -197,8 +196,11 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
     const positions = []
     const deltaX = caseDimensions.length * 2
 
-    const totalWidth = palletWidth * numPallets + (numPallets - 1) * gap
-    const startX = totalWidth / 2 + gap + caseDimensions.length / 2
+    const totalWidth = palletActualWidth * numPallets + (numPallets - 1) * gap
+    const startX =
+      numPallets > 0
+        ? totalWidth / 2 + gap + caseDimensions.length / 2
+        : totalWidth / 2
 
     const y = -(palletDimensions.height / 2) * caseDimensions.height
 
@@ -214,7 +216,7 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
     return positions
   }
 
-  const createPlusStacks = (plus, maxHeight, startingPosition) => {
+  const createPlusStacks = (plus, maxHeight) => {
     const numStacks = Math.ceil(plus / maxHeight)
     const lower = Math.floor(plus / numStacks)
     const upper = lower + 1
@@ -266,25 +268,7 @@ const Break = ({ position, orbitControlsRef, ...props }) => {
     lowerQuantity
   )
 
-  let plusStacks = null
-  if (!isNaN(plus)) {
-    const totalWidth = palletWidth * palletCount + (palletCount - 1) * gap
-    const delta = palletWidth + gap
-    const startX =
-      -totalWidth / 2 +
-      palletWidth / 2 +
-      delta * (palletCount - 1) +
-      palletWidth / 2 +
-      caseDimensions.length * 2
-
-    const initialPosition = [startX, 0, caseDimensions.width]
-
-    if (pallets.length === 0) {
-      initialPosition[0] -= (palletWidth + gap) / 2 - caseDimensions.length / 2
-    }
-
-    plusStacks = createPlusStacks(plus, maxPlusHeight, initialPosition)
-  }
+  const plusStacks = !isNaN(plus) ? createPlusStacks(plus, maxPlusHeight) : null
 
   return (
     <>
