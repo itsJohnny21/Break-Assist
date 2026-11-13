@@ -18,7 +18,6 @@ const Scene = ({ className, ...props }) => {
       <directionalLight position={[-2, 5, 2]} intensity={1} />
       <OrbitControls
         ref={orbitControlsRef}
-        ref={orbitControlsRef}
         target={cameraHomeLookAt}
         enablePan={false}
         enableZoom={true}
